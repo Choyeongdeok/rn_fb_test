@@ -1,19 +1,20 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, LayoutAnimation} from 'react-native';
+import {View, Platform, Text, StyleSheet, TouchableOpacity, LayoutAnimation} from 'react-native';
 import * as firebase from 'firebase';
+
+import {Ionicons} from '@expo/vector-icons';
 
 export default class HomeScreen extends Component {
     
     state = {
-        name : "",
         email : "",
         displayname : ""
     }
     
     componentDidMount() {
-        const {name ,email, displayname} = firebase.auth().currentUser
+        const {email, displayname} = firebase.auth().currentUser
 
-        this.setState({name, email, displayname});
+        this.setState({email, displayname});
     }
 
     signOutUser = () => {

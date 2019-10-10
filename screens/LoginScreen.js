@@ -5,14 +5,13 @@ import * as firebase from 'firebase';
 
 export default class LoginScreen extends Component {
     state = {
-        name : "",
         email : "",
         password : "",
         errorMessage : null
     }
 
     handleLogin = () => {
-        const {name, email, password} = this.state;
+        const {email, password} = this.state;
 
         firebase
             .auth()
