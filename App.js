@@ -15,6 +15,16 @@ import ClockInOutScreen from './screens/ClockInOutScreen';
 import MyPageScreen from './screens/MyPageScreen';
 import MoreScreen from './screens/MoreScreen';
 
+import UpdateScreen from './screens/UpdateScreen';
+import ClockRecordScreen from './screens/ClockRecordScreen';
+import WorkingRecordScreen from './screens/WorkingRecordScreen';
+import CertificationScreen from './screens/CertificationScreen';
+import QualificationScreen from './screens/QualificationScreen';
+import AccountNumberScreen from './screens/AccountNumberScreen';
+import SignatureScreen from './screens/SignatureScreen';
+
+
+console.disableYellowBox = true;
 
 var firebaseConfig = {
   apiKey: "AIzaSyDdXYffxGYxrftv-HxbB6LGfyRWQ0rAcHY",
@@ -42,37 +52,93 @@ const HomeStack = createStackNavigator({
 
 
 const ClockInOutStack = createStackNavigator({
-  ClockInOut : {
-    screen : ClockInOutScreen,
-    navigationOptions : {
-      headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
-      headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>ClockInOut</Text></View>,
-      headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
-      }
+    ClockInOut : {
+        screen : ClockInOutScreen,
+        navigationOptions : {
+            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>ClockInOut</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+        }
     }
 })
 
 const MyPageStack = createStackNavigator({
-  MyPage : {
-    screen : MyPageScreen,
-    navigationOptions : {
-      headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
-      headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>MyPage</Text></View>,
-      headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
-      }
+    MyPage : {
+        screen : MyPageScreen,
+        navigationOptions : {
+            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>MyPage</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+        }
+    },
+    Update : {
+        screen : UpdateScreen,
+        navigationOptions : {
+            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>개인정보수정</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+        }
+    },
+    ClockRecord : {
+        screen : ClockRecordScreen,
+        navigationOptions : {
+            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>출/퇴근 이력 조회</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+        }
+    },
+    WorkingRecord : {
+        screen : WorkingRecordScreen,
+        navigationOptions : {
+            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>근로계약서 작성 이력</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+        }
+    },
+    Certification : {
+        screen : CertificationScreen,
+        navigationOptions : {
+            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>보건교육 이수증 등록</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+        }
+    },
+    Qualification : {
+        screen : QualificationScreen,
+        navigationOptions : {
+            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>자격증/경력(서류) 등록</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+        }
+    },
+    AccountNumber : {
+        screen : AccountNumberScreen,
+        navigationOptions : {
+            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>계좌번호 등록</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+        }
+    },
+    Signature : {
+        screen : SignatureScreen,
+        navigationOptions : {
+            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>전자서명 등록</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+        }
     }
-  })
+})
 
 const MoreStack = createStackNavigator({
-  More : {
-    screen : MoreScreen,
-    navigationOptions : {
-      headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
-      headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>More</Text></View>,
-      headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
-      }
+    More : {
+        screen : MoreScreen,
+        navigationOptions : {
+            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>More</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+        }
     }
-  })
+})
 
 
 const AppTabNavigator = createBottomTabNavigator(
@@ -124,8 +190,7 @@ export default createAppContainer(
     {
       Loading : LoadingScreen,
       App : AppTabNavigator,
-      Auth : AuthStack,
-      // Main : AppStackNavigator
+      Auth : AuthStack
     },
     {
       intitialRouteName : "Loading"
