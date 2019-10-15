@@ -5,25 +5,75 @@ import * as firebase from 'firebase';
 
 export default class UpdateScreen extends Component {
 
-    constructor(props) {
+    constructor(props){
         super(props);
-        this.state = {data : [] }
+        this.state = { data : [] }
+    }
+    componentDidMount() {
+        const userId = firebase.auth().currentUser.uid
+        const ref = firebase.database().ref('/users/' + userId)
+        ref.on("value", snapshot => {
+            this.setState({data: snapshot.val()});
+        });
+            
     }
 
-    componentDidMount() {
-        const ref = firebase.database().ref('users/qEUpXaPOoLcfVTmxalGRtZsTlbY2');
-        ref.on("value", snapshot => {
-            this.setState({ data: snapshot.val()});
+    handleUpdate = () => {
+        const userId = firebase.auth().currentUser.uid
+        firebase.database().ref('/users/' + userId).set({
+            name : this.state.name,
+            email : this.state.email,
+            phonenumber : this.state.phonenumber
         })
     }
-    
-    
 
     render() {
+        //console.log(this.state.data.name)
         return(
-            <View>
-                <Text>개인정보 수정</Text>
+            // <View style = {styles.container}>
+            //     <Text style = {styles.inputTitle}> 이름 : {this.state.data.name}</Text>
+            //     <Text> 이메일 : {this.state.data.email}</Text>
+            //     <Text> 휴대폰 번호 : {this.state.data.phonenumber}</Text>
+            //     <Text>개인정보 수정</Text>
+            // </View>
+
+            <ScrollView style = {{flex : 1}}>
+            <View style = {styles.container}>
+                <Text style={styles.greeting}>{`수정할 개인정보를 입력한 후,\n'수정하기' 버튼을 눌러주세요.`}</Text>
+                
+                <View style = {styles.errorMessage}>
+                    {this.state.errorMessage && <Text style={styles.error}>{this.state.errorMessage}</Text>}
+                </View>
+
+                <View style = {styles.form}>
+
+                    <View>
+                        <Text style = {styles.inputTitle}>Email Address</Text>
+                            <Text>{this.state.data.email}</Text>
+                    </View>
+
+
+                    <View style = {{marginTop : 32}}>
+                        <Text style = {styles.inputTitle}>Full Name</Text>
+                        <TextInput
+                            style = {styles.input} placeholder = {`${this.state.data.name}`} autoCapitalize = "none" onChangeText={name => this.setState({name})} value={this.state.name}
+                        ></TextInput>
+                    </View>
+
+                    <View style = {{marginTop : 32}}>
+                        <Text style = {styles.inputTitle}>Phone Number</Text>
+                        <TextInput
+                            style = {styles.input} placeholder = {`${this.state.data.phonenumber}`} autoCapitalize = "none" onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}
+                        ></TextInput>
+                    </View>
+                </View>
+
+                <TouchableOpacity style={styles.button} onPress={this.handleUpdate}>
+                    <Text style = {{color:"#FFF", fontWeight: "500"}}>수정하기</Text>
+                </TouchableOpacity>
             </View>
+            </ScrollView>
+            
         )
     }
 }
@@ -72,6 +122,7 @@ const styles = StyleSheet.create({
         borderRadius : 4,
         height : 52,
         alignItems : "center",
-        justifyContent : "center"
+        justifyContent : "center",
+        marginBottom : 64
     }
 });

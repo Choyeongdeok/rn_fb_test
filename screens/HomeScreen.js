@@ -6,17 +6,19 @@ import {Ionicons} from '@expo/vector-icons';
 
 export default class HomeScreen extends Component {
     
-    state = {
-        email : "",
-        displayname : ""
+    constructor(props){
+        super(props);
+        this.state = { data : [] }
     }
-    
+
     componentDidMount() {
-        const {email, displayname} = firebase.auth().currentUser
-
-        this.setState({email, displayname});
+        const userId = firebase.auth().currentUser.uid
+        const ref = firebase.database().ref('/users/' + userId)
+        ref.on("value", snapshot => {
+            this.setState({data: snapshot.val()});
+        });
+            
     }
-
     signOutUser = () => {
         firebase.auth().signOut();
     }
@@ -25,7 +27,7 @@ export default class HomeScreen extends Component {
         LayoutAnimation.easeInEaseOut() 
         return (
             <View style = {styles.container}>
-                <Text>Hi {this.state.email}</Text>
+                <Text> 안녕하세요. {this.state.data.name}님</Text>
                 <TouchableOpacity style={{marginTop : 32}} onPress={this.signOutUser}>
                     <Text>Logout</Text>
                 </TouchableOpacity>

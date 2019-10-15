@@ -3,6 +3,7 @@ import {ScrollView, View, Text, StyleSheet} from 'react-native';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import * as firebase from 'firebase';
 
+
 export default class RegisterScreen extends Component {
 
     state = {
@@ -52,27 +53,27 @@ export default class RegisterScreen extends Component {
                     <View>
                         <Text style = {styles.inputTitle}>Full Name</Text>
                         <TextInput
-                            style = {styles.input} autoCapitalize = "none" onChangeText={name => this.setState({name})} value={this.state.name}
+                            style = {styles.input} placeholder = "이름을 입력하세요." autoCapitalize = "none" onChangeText={name => this.setState({name})} value={this.state.name}
                         ></TextInput>
                     </View>
                     <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>Email Address</Text>
                         <TextInput
-                            style = {styles.input} autoCapitalize = "none" onChangeText={email => this.setState({email})} value={this.state.email}
+                            style = {styles.input} placeholder = "이메일을 입력하세요." autoCapitalize = "none" onChangeText={email => this.setState({email})} value={this.state.email}
                         ></TextInput>
                     </View>
 
                     <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>Phone Number</Text>
                         <TextInput
-                            style = {styles.input} autoCapitalize = "none" onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}
+                            style = {styles.input} placeholder = "전화번호를 입력하세요." autoCapitalize = "none" onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}
                         ></TextInput>
                     </View>
 
                     <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>Password</Text>
                         <TextInput
-                            style = {styles.input} secureTextEntry autoCapitalize = "none" onChangeText={password => this.setState({password})} value = {this.state.password}
+                            style = {styles.input} placeholder = "비밀번호를 입력하세요." secureTextEntry autoCapitalize = "none" onChangeText={password => this.setState({password})} value = {this.state.password}
                         ></TextInput>
                     </View>
                 </View>
