@@ -7,31 +7,38 @@ import * as firebase from 'firebase';
 
 export default class ClockInOutScreen extends Component {
 
+    constructor(props){
+        super(props);
+        this.state ={
+            year : new Date().getFullYear(),
+            month : new Date().getMonth() + 1,
+            date : new Date().getDate(),
+            hours : new Date().getHours(),
+            min : new Date().getMinutes()
+        };
+    }
+
     state = {
         hasCameraPermission: null,
         scanned: false,
         data : '',
-        clockinout : [],
-        time : ''
+        clockinout : []
     };
 
     componentDidMount() {
         this.getPermissionsAsync();
-        var date = new Date().getDate(); //Current Date
-        var month = new Date().getMonth() + 1; //Current Month
-        var year = new Date().getFullYear(); //Current Year
-        var hours = new Date().getHours(); //Current Hours
-        var min = new Date().getMinutes(); //Current Minutes
-        // var sec = new Date().getSeconds(); //Current Seconds
+        this.interval = setInterval(() => this.setState({
+            year : new Date().getFullYear(),
+            month : new Date().getMonth() + 1,
+            date : new Date().getDate(),
+            hours : new Date().getHours(),
+            min : new Date().getMinutes(),
+        }), 1000);
+        
+    }
 
-        this.setState({
-            //Setting the value of the date time
-            time:
-                year + '년 ' + month + '월 ' + date + '일 ' + hours + '시' + min + '분',
-            year : year,
-            month : month,
-            date : date
-        });
+    componentWillMount() {
+        clearInterval(this.interval);
     }
 
     getPermissionsAsync = async () => {
@@ -69,19 +76,17 @@ export default class ClockInOutScreen extends Component {
     }
     handleBarCodeScanned = ({ type, data }) => {
         this.setState({ scanned: true })
-
-       
-        
-
+        this.setState({timerecord : `${this.state.year}년 ${this.state.month}월 ${this.state.date}일 ${this.state.hours}시 ${this.state.min}분`})
         const userId = firebase.auth().currentUser.uid
         firebase.database().ref('/users/' + userId + '/clock/' + this.state.year + '/' + this.state.month).push({
-            clockinout : [this.state.time, data]
+            clockinout : [`${this.state.year}년 ${this.state.month}월 ${this.state.date}일 ${this.state.hours}시 ${this.state.min}분`, data]
         })
         Alert.alert(
             'Alert Title',
-            `${this.state.time} ${data}`, 
+            `${this.state.year}년 ${this.state.month}월 ${this.state.date}일 ${this.state.hours}시 ${this.state.min}분 ${data}`, 
             [
-                {text: 'OK', onPress: () => this.setState({`${this.state.time }`})}
+                {text: 'OK', onPress: () => console.log
+                (`${this.state.timerecord }`)}
             ],
             {cancelable: false}
         )
