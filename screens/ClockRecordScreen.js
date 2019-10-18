@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {ScrollView, Text, View, StyleSheet } from 'react-native'
 import {Ionicons} from '@expo/vector-icons'
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity, FlatList } from 'react-native-gesture-handler';
 import * as firebase from 'firebase';
 
 export default class ClockRecordScreen extends Component {
@@ -27,21 +27,22 @@ export default class ClockRecordScreen extends Component {
             min : new Date().getMinutes(),
         }), 100000);
         const userId = firebase.auth().currentUser.uid
+        var clockArray = new Array();
+        var clockInfo = new Object();
         firebase.database().ref('/users/' + userId + '/clock/' + this.state.year + '/' + this.state.month).on("value",snapshot => {
             var snapVal = snapshot.val();
-            var clockArray = []
+            
             for (var key in snapVal) {
                 if (snapVal.hasOwnProperty(key)){
                     for (var obj in snapVal[key]){
-                        for(var i = 0; i < 2; i++){
-                            clockArray.push(snapVal[key][obj][i])
-                            console.log(snapVal[key][obj][i])
-                        }
+                        clockInfo.key = snapVal[key][obj][0]
+                        clockInfo.value = snapVal[key][obj][1]
+                        clockArray.push(JSON.stringify(clockInfo))
+                        // console.log(clockInfo)
                     }
-                    clockArray.push(`\n`)
                 }
-            }
-            this.setState({data : clockArray })
+            }            
+            this.setState({data : clockArray})
         })
         
     }
@@ -54,7 +55,6 @@ export default class ClockRecordScreen extends Component {
         this.setState({month : this.state.month - 1}, this.readData)
         if (this.state.month == 1) {
             this.setState({year : this.state.year - 1, month : this.state.month = 12}, this.readData)
-            // this.setState({month : this.state.month = 12})
         }   
     }
 
@@ -63,7 +63,6 @@ export default class ClockRecordScreen extends Component {
         this.setState({month : this.state.month + 1}, this.readData)
         if (this.state.month == 12) {
             this.setState({year : this.state.year + 1, month : this.state.month = 1}, this.readData)
-            // this.setState({month : this.state.month = 1})
         }
     }
 
@@ -77,7 +76,6 @@ export default class ClockRecordScreen extends Component {
                     for (var obj in snapVal[key]){
                         for(var i = 0; i < 2; i++){
                             clockArray.push(snapVal[key][obj][i])
-                            console.log(snapVal[key][obj][i])
                         }
                     }
                     clockArray.push(`\n`)
@@ -91,13 +89,15 @@ export default class ClockRecordScreen extends Component {
                 this.setState({data : <Text style = {{fontSize : 24}}>출근 이력이 없습니다.</Text>})
             }
             else{
-               this.setState({data : clockArray })
+               this.setState({data : clockArray})
             }
         })
     }
+    
 
 
     render() {
+        console.log(typeof(this.state.data))
         return (
             <ScrollView style = {{flex : 1}}>
                 <View>
@@ -110,7 +110,16 @@ export default class ClockRecordScreen extends Component {
                     
                 </View>
                 <View style = {{alignItems : "center", justifyContent : "space-between", flexDirection : 'row'}}>
-                    <Text style = {{fontSize : 24}} >{this.state.data}</Text>
+                    {/* <Text style = {{fontSize : 24}} >{this.state.data}</Text> */}
+                    <FlatList 
+                        numColumns = {2}
+                        data = { this.state.data}
+                        renderItem = {({item}) => {
+                            return <Text>
+                                {item.key} {item.value}
+                            </Text>
+                        }}
+                    />
                 </View>
                 </View>
             </ScrollView>
