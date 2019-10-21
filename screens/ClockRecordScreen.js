@@ -14,11 +14,13 @@ export default class ClockRecordScreen extends Component {
             date : new Date().getDate(),
             hours : new Date().getHours(),
             min : new Date().getMinutes(),
-            data : []
+            data : [],
+            object : {}
         };
     }
     
     componentDidMount() {
+
         this.interval = setInterval(() => this.setState({
             year : new Date().getFullYear(),
             month : new Date().getMonth() + 1,
@@ -26,22 +28,31 @@ export default class ClockRecordScreen extends Component {
             hours : new Date().getHours(),
             min : new Date().getMinutes(),
         }), 100000);
+
         const userId = firebase.auth().currentUser.uid
         var clockArray = new Array();
         var clockInfo = new Object();
+
         firebase.database().ref('/users/' + userId + '/clock/' + this.state.year + '/' + this.state.month).on("value",snapshot => {
             var snapVal = snapshot.val();
             
             for (var key in snapVal) {
                 if (snapVal.hasOwnProperty(key)){
                     for (var obj in snapVal[key]){
-                        clockInfo.key = snapVal[key][obj][0]
+                        clockInfo.keys = snapVal[key][obj][0]
                         clockInfo.value = snapVal[key][obj][1]
-                        clockArray.push(JSON.stringify(clockInfo))
-                        // console.log(clockInfo)
+                        // clockArray.push(JSON.stringify(clockInfo))
+                        
+
                     }
                 }
-            }            
+                clockArray.push(clockInfo)
+            }
+            // var a = clockArray.toString()
+            // a = a.replace(/"keys"/g, 'keys')
+            // a = a.replace(/"value"/g, 'value')
+
+            console.log(typeof(clockArray))
             this.setState({data : clockArray})
         })
         
@@ -97,8 +108,14 @@ export default class ClockRecordScreen extends Component {
 
 
     render() {
-        console.log(typeof(this.state.data))
+        console.log(this.state.data)
+        // console.log(this.state.data)
+        // var fixdata = this.state.data.toString();
+        // var newdata = fixdata.replace(`"`, ``)
+        // console.log(typeof(fixdata))
+        // console.log(newdata)
         return (
+            
             <ScrollView style = {{flex : 1}}>
                 <View>
                 <View style = {{alignItems : "center", justifyContent : "space-around", height : 50, backgroundColor : '#0C00AF' , flexDirection : 'row'}}>
@@ -109,14 +126,14 @@ export default class ClockRecordScreen extends Component {
                     <TouchableOpacity onPress = {this.plusMonth}><Ionicons name = "ios-arrow-forward" size = {30} color = "#FFFFFF" /></TouchableOpacity>
                     
                 </View>
-                <View style = {{alignItems : "center", justifyContent : "space-between", flexDirection : 'row'}}>
+                <View style = {{alignItems : "stretch", justifyContent : "center", flexDirection : 'row'}}>
                     {/* <Text style = {{fontSize : 24}} >{this.state.data}</Text> */}
                     <FlatList 
-                        numColumns = {2}
-                        data = { this.state.data}
+                        // numColumns = {2}
+                        data = {this.state.data}
                         renderItem = {({item}) => {
                             return <Text>
-                                {item.key} {item.value}
+                                {item.keys} {item.value}
                             </Text>
                         }}
                     />
