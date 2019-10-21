@@ -4,6 +4,19 @@ import {Ionicons} from '@expo/vector-icons'
 import { TouchableOpacity, FlatList } from 'react-native-gesture-handler';
 import * as firebase from 'firebase';
 
+
+function Item({index1, index2}) {
+  
+    return (
+        <View style={styles.item}> 
+            <Text style={styles.title}>{index1}</Text>
+            <Text style={styles.middle}>{index2}</Text>   
+        </View>
+      
+    );
+  }
+  
+
 export default class ClockRecordScreen extends Component {
     
     constructor(props){
@@ -27,25 +40,28 @@ export default class ClockRecordScreen extends Component {
             min : new Date().getMinutes(),
         }), 100000);
         const userId = firebase.auth().currentUser.uid
-        var clockArray = new Array();
-        var clockInfo = new Object();
-        firebase.database().ref('/users/' + userId + '/clock/' + this.state.year + '/' + this.state.month).on("value",snapshot => {
+        var clockArray = [];
+        // var clockInfo = new Object();
+       firebase.database().ref('/users/' + userId + '/clock/' + this.state.year + '/' + this.state.month).on("value", async (snapshot) => {
             var snapVal = snapshot.val();
-            
+            // console.log(snapVal['-LrCiPh74yngtv8M0yTz'].clockinout[0])
             for (var key in snapVal) {
                 if (snapVal.hasOwnProperty(key)){
-                    for (var obj in snapVal[key]){
-                        clockInfo.key = snapVal[key][obj][0]
-                        clockInfo.value = snapVal[key][obj][1]
-                        clockArray.push(JSON.stringify(clockInfo))
-                        // console.log(clockInfo)
-                    }
+                    // console.log(snapVal[keys].clockinout[1])
+                    // clockInfo.key = await  snapVal[keys].clockinout[0]
+                    // clockInfo.value = await  snapVal[keys].clockinout[1]
+                    await  clockArray.push({time:snapVal[key].clockinout[0], value:snapVal[key].clockinout[1] })
+                    // this.setState({data : clockInfo})
+                    
                 }
-            }            
+                
+            }   
+            // console.log(clockArray)
             this.setState({data : clockArray})
         })
         
     }
+
     
     componentWillMount() {
         clearInterval(this.interval);
@@ -97,10 +113,10 @@ export default class ClockRecordScreen extends Component {
 
 
     render() {
-        console.log(typeof(this.state.data))
+        // console.log(this.state.data)
         return (
             <ScrollView style = {{flex : 1}}>
-                <View>
+                {/* <View> */}
                 <View style = {{alignItems : "center", justifyContent : "space-around", height : 50, backgroundColor : '#0C00AF' , flexDirection : 'row'}}>
                     
                     
@@ -109,22 +125,40 @@ export default class ClockRecordScreen extends Component {
                     <TouchableOpacity onPress = {this.plusMonth}><Ionicons name = "ios-arrow-forward" size = {30} color = "#FFFFFF" /></TouchableOpacity>
                     
                 </View>
-                <View style = {{alignItems : "center", justifyContent : "space-between", flexDirection : 'row'}}>
+                {/* <View style = {{alignItems : "stretch", justifyContent : "center", flexDirection : 'row'}}> */}
                     {/* <Text style = {{fontSize : 24}} >{this.state.data}</Text> */}
                     <FlatList 
-                        numColumns = {2}
+                        // numColumns = {2}
                         data = { this.state.data}
-                        renderItem = {({item}) => {
-                            return <Text>
-                                {item.key} {item.value}
-                            </Text>
-                        }}
+                        renderItem = {({item}) => 
+                            <Item 
+                                index1 = {item.value}
+                                index2 = {item.time}
+                            />        
+                        }
                     />
-                </View>
-                </View>
+                {/* </View> */}
+                {/* </View> */}
             </ScrollView>
         )
             
     }
 }
 
+const styles = StyleSheet.create({
+    item: {
+        borderBottomWidth:0.5,
+        marginVertical: 8,
+        alignItems : "stretch"
+      },
+      title: {
+        fontSize: 20,
+        textAlign:'left',
+        marginLeft : 20
+      },
+      middle:{
+          fontSize: 15,
+          textAlign:'left',
+          marginLeft : 15
+      }
+})
