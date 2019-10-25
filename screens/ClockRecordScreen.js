@@ -6,16 +6,14 @@ import * as firebase from 'firebase';
 
 
 function Item({index1, index2}) {
-  
     return (
         <View style={styles.item}> 
             <Text style={styles.title}>{index1}</Text>
             <Text style={styles.middle}>{index2}</Text>   
         </View>
-      
+    
     );
-  }
-  
+}
 
 export default class ClockRecordScreen extends Component {
     
@@ -41,28 +39,32 @@ export default class ClockRecordScreen extends Component {
         }), 100000);
         const userId = firebase.auth().currentUser.uid
         var clockArray = [];
-        // var clockInfo = new Object();
-       firebase.database().ref('/users/' + userId + '/clock/' + this.state.year + '/' + this.state.month).on("value", async (snapshot) => {
+        firebase.database().ref('/users/' + userId + '/clock/' + this.state.year + '/' + this.state.month).on("value", async (snapshot) => {
             var snapVal = snapshot.val();
-            // console.log(snapVal['-LrCiPh74yngtv8M0yTz'].clockinout[0])
-            for (var key in snapVal) {
-                if (snapVal.hasOwnProperty(key)){
-                    // console.log(snapVal[keys].clockinout[1])
-                    // clockInfo.key = await  snapVal[keys].clockinout[0]
-                    // clockInfo.value = await  snapVal[keys].clockinout[1]
-                    await  clockArray.push({time:snapVal[key].clockinout[0], value:snapVal[key].clockinout[1] })
-                    // this.setState({data : clockInfo})
-                    
+            if(snapVal == null) {
+                clockArray.push({value : ["출근 이력이 없습니다."]})
+                this.setState({data : clockArray})
+            }
+            else {
+                for (var key in snapVal) {
+                    if (snapVal.hasOwnProperty(key)){
+                        await  clockArray.push({time:snapVal[key].clockinout[0], value:snapVal[key].clockinout[1] })   
+                    }
+                    else {
+                        clockArray = null
+                    }
                 }
-                
-            }   
-            // console.log(clockArray)
-            this.setState({data : clockArray})
+                if (clockArray[0] == null){
+                    clockArray.push({value : ["출근 이력이 없습니다."]})
+                    this.setState({data : clockArray})
+                }
+                else{
+                this.setState({data : clockArray})
+                }
+            }
         })
-        
     }
 
-    
     componentWillMount() {
         clearInterval(this.interval);
     }
@@ -74,7 +76,6 @@ export default class ClockRecordScreen extends Component {
         }   
     }
 
-
     plusMonth = () => {
         this.setState({month : this.state.month + 1}, this.readData)
         if (this.state.month == 12) {
@@ -84,25 +85,20 @@ export default class ClockRecordScreen extends Component {
 
     readData = () => {
         const userId = firebase.auth().currentUser.uid
-        firebase.database().ref('/users/' + userId + '/clock/' + this.state.year + '/' + this.state.month).on("value",snapshot => {
+        firebase.database().ref('/users/' + userId + '/clock/' + this.state.year + '/' + this.state.month).on("value", async (snapshot) => {
             var snapVal = snapshot.val();
-            var clockArray = []
+            var clockArray = [];
             for (var key in snapVal) {
                 if (snapVal.hasOwnProperty(key)){
-                    for (var obj in snapVal[key]){
-                        for(var i = 0; i < 2; i++){
-                            clockArray.push(snapVal[key][obj][i])
-                        }
-                    }
-                    clockArray.push(`\n`)
+                    await  clockArray.push({time:snapVal[key].clockinout[0], value:snapVal[key].clockinout[1] })   
                 }
                 else {
                     clockArray = null
                 }
             }
-
             if (clockArray[0] == null){
-                this.setState({data : <Text style = {{fontSize : 24}}>출근 이력이 없습니다.</Text>})
+                clockArray.push({value : ["출근 이력이 없습니다."]})
+                this.setState({data : clockArray})
             }
             else{
                this.setState({data : clockArray})
@@ -110,26 +106,18 @@ export default class ClockRecordScreen extends Component {
         })
     }
     
-
-
     render() {
-        // console.log(this.state.data)
         return (
             <ScrollView style = {{flex : 1}}>
-                {/* <View> */}
                 <View style = {{alignItems : "center", justifyContent : "space-around", height : 50, backgroundColor : '#0C00AF' , flexDirection : 'row'}}>
-                    
                     
                     <TouchableOpacity onPress = {this.minusMonth}><Ionicons name = "ios-arrow-back" size = {30} color = "#FFFFFF"/></TouchableOpacity>
                     <Text style = {{color : "#FFFFFF", fontSize : 20, }}>{`${this.state.year} 년    ${this.state.month} 월`}</Text>
                     <TouchableOpacity onPress = {this.plusMonth}><Ionicons name = "ios-arrow-forward" size = {30} color = "#FFFFFF" /></TouchableOpacity>
                     
                 </View>
-                {/* <View style = {{alignItems : "stretch", justifyContent : "center", flexDirection : 'row'}}> */}
-                    {/* <Text style = {{fontSize : 24}} >{this.state.data}</Text> */}
                     <FlatList 
-                        // numColumns = {2}
-                        data = { this.state.data}
+                        data = {this.state.data}
                         renderItem = {({item}) => 
                             <Item 
                                 index1 = {item.value}
@@ -137,8 +125,6 @@ export default class ClockRecordScreen extends Component {
                             />        
                         }
                     />
-                {/* </View> */}
-                {/* </View> */}
             </ScrollView>
         )
             
@@ -160,5 +146,9 @@ const styles = StyleSheet.create({
           fontSize: 15,
           textAlign:'left',
           marginLeft : 15
-      }
+      },
+      middle2:{
+        fontSize: 20,
+        textAlign:'center',
+    }
 })

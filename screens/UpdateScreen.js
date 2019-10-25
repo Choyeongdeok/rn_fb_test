@@ -9,6 +9,7 @@ export default class UpdateScreen extends Component {
         super(props);
         this.state = { data : [] }
     }
+    
     componentDidMount() {
         const userId = firebase.auth().currentUser.uid
         const ref = firebase.database().ref('/users/' + userId)
@@ -28,15 +29,7 @@ export default class UpdateScreen extends Component {
     }
 
     render() {
-        //console.log(this.state.data.name)
         return(
-            // <View style = {styles.container}>
-            //     <Text style = {styles.inputTitle}> 이름 : {this.state.data.name}</Text>
-            //     <Text> 이메일 : {this.state.data.email}</Text>
-            //     <Text> 휴대폰 번호 : {this.state.data.phonenumber}</Text>
-            //     <Text>개인정보 수정</Text>
-            // </View>
-
             <ScrollView style = {{flex : 1}}>
             <View style = {styles.container}>
                 <Text style={styles.greeting}>{`수정할 개인정보를 입력한 후,\n'수정하기' 버튼을 눌러주세요.`}</Text>

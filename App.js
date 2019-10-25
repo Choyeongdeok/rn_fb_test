@@ -1,20 +1,26 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 import * as firebase from 'firebase';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
+
 import LoadingScreen from './screens/LoadingScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import RegisterCompanyScreen from './screens/RegisterCompanyScreen'
+import RegisterUserScreen from './screens/RegisterUserScreen';
 
 import {Ionicons} from '@expo/vector-icons';
 
+//홈
 import HomeScreen from './screens/HomeScreen';
-import ClockInOutScreen from './screens/ClockInOutScreen';
-import MyPageScreen from './screens/MyPageScreen';
-import MoreScreen from './screens/MoreScreen';
 
+//출퇴근 QR코드
+import ClockInOutScreen from './screens/ClockInOutScreen';
+
+//마이페이지
+import MyPageScreen from './screens/MyPageScreen';
 import UpdateScreen from './screens/UpdateScreen';
 import ClockRecordScreen from './screens/ClockRecordScreen';
 import WorkingRecordScreen from './screens/WorkingRecordScreen';
@@ -23,6 +29,12 @@ import QualificationScreen from './screens/QualificationScreen';
 import AccountNumberScreen from './screens/AccountNumberScreen';
 import SignatureScreen from './screens/SignatureScreen';
 
+//더보기
+import MoreScreen from './screens/MoreScreen';
+import QuestionsScreen from './screens/QuestionsScreen';
+import WorkRegistrationScreen from './screens/WorkRegistrationScreen'
+import NoticeScreen from './screens/NoticeScreen';
+import DocumentRegistrationScreen from './screens/DocumentRegistrationScreen';
 
 console.disableYellowBox = true;
 
@@ -40,24 +52,20 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const HomeStack = createStackNavigator({
-  Home : {
-    screen : HomeScreen,
-    navigationOptions : {
-      headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
-      headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>Home</Text></View>,
-      headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
-      }
+Home : {
+        screen : HomeScreen,
+        navigationOptions : {
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>홈</Text></View>,
+        }
     }
-  })
+})
 
 
 const ClockInOutStack = createStackNavigator({
     ClockInOut : {
         screen : ClockInOutScreen,
         navigationOptions : {
-            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
-            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>ClockInOut</Text></View>,
-            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>QR코드 촬영(출, 퇴근)</Text></View>,
         }
     }
 })
@@ -66,65 +74,56 @@ const MyPageStack = createStackNavigator({
     MyPage : {
         screen : MyPageScreen,
         navigationOptions : {
-            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
-            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>MyPage</Text></View>,
-            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>마이페이지</Text></View>,
         }
     },
     Update : {
         screen : UpdateScreen,
         navigationOptions : {
-            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
             headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>개인정보수정</Text></View>,
-            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+            headerRight : <Text style = {{marginRight : 20}}></Text>
         }
     },
     ClockRecord : {
         screen : ClockRecordScreen,
         navigationOptions : {
-            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
             headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>출/퇴근 이력 조회</Text></View>,
-            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+            headerRight : <Text style = {{marginRight : 20}}></Text>
         }
     },
     WorkingRecord : {
         screen : WorkingRecordScreen,
         navigationOptions : {
-            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
             headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>근로계약서 작성 이력</Text></View>,
-            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+            headerRight : <Text style = {{marginRight : 20}}></Text>
         }
     },
     Certification : {
         screen : CertificationScreen,
         navigationOptions : {
-            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
             headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>보건교육 이수증 등록</Text></View>,
-            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+            headerRight : <Text style = {{marginRight : 20}}></Text>
         }
     },
     Qualification : {
         screen : QualificationScreen,
         navigationOptions : {
-            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
             headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>자격증/경력(서류) 등록</Text></View>,
-            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+            headerRight : <Text style = {{marginRight : 20}}></Text>
         }
     },
     AccountNumber : {
         screen : AccountNumberScreen,
         navigationOptions : {
-            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
             headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>계좌번호 등록</Text></View>,
-            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+            headerRight : <Text style = {{marginRight : 20}}></Text>
         }
     },
     Signature : {
         screen : SignatureScreen,
         navigationOptions : {
-            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
             headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>전자서명 등록</Text></View>,
-            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+            headerRight : <Text style = {{marginRight : 20}}></Text>
         }
     }
 })
@@ -133,9 +132,36 @@ const MoreStack = createStackNavigator({
     More : {
         screen : MoreScreen,
         navigationOptions : {
-            headerLeft : <Text style = {{marginLeft : 20}}>asdf</Text>,
-            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>More</Text></View>,
-            headerRight : <Text style = {{marginRight : 20}}>asdf</Text>
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>더보기</Text></View>,
+        }
+    },
+    Notice:{
+        screen : NoticeScreen,
+        navigationOptions : {
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>공지사항</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}></Text>
+        }
+    },
+    WorkRegistration : {
+        screen : WorkRegistrationScreen,
+        navigationOptions : {
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>구인 등록</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}></Text>
+        }
+    },
+    DocumentRegistration : {
+        screen: DocumentRegistrationScreen,
+        navigationOptions : {
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>전자근로계약서 등록</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}></Text>
+            
+        }
+    },
+    Questions:{
+        screen: QuestionsScreen,
+        navigationOptions : {
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>문의사항</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}></Text>
         }
     }
 })
@@ -180,7 +206,9 @@ const AppTabNavigator = createBottomTabNavigator(
 
 const AuthStack = createStackNavigator({
   Login : LoginScreen,
-  Register : RegisterScreen
+  Register : RegisterScreen,
+  RegisterUser : RegisterUserScreen,
+  RegisterCompany : RegisterCompanyScreen
 })
 
 
