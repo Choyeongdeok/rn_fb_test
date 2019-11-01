@@ -2,29 +2,175 @@ import React, { Component } from 'react'
 import { Text, StyleSheet, View, FlatList, TouchableOpacity, TextInput, Alert, ScrollView } from 'react-native'
 import * as firebase from 'firebase'
 import {Dropdown} from 'react-native-material-dropdown'
-import CheckBox from 'react-native-checkbox'
+import {Card, CardItem, CheckBox} from 'native-base'
+import SignaturePad from 'react-native-signature-pad'
 
 export default class DocumentRegistrationScreen extends Component {
 
     constructor(props){
         super(props);
-        this.state = { data : [],
-            checked : false,
+        this.state = {
+            data : [],
+            workdata : [],
             checked1 : false,
             checked2 : false,
             checked3 : false,
-            checked4 : false }
+            checked4 : false,
+            signature : ""
+        }
+    }
+
+    state = {
+        one : false,
+        two : false,
+        workKey : null,
+        address : '',
+        firstday : '',
+        lastday : '',
+        paytype : '',
+        pay : '',
+        company : '',
+        head : '',
+        phonenumber : '',
+        workDetail : '',
+        weekHours : 0,
+        workType : '',
+        workstartTime : '',
+        workendTime : '',
+        reststartTime : '',
+        restendTime : '',
+        daytype : '',
+        givetype : '',
+        insurance : '',
+        in1 : '',
+        in2 : '',
+        in3 : '',
+        in4 : ''
     }
     
     componentDidMount() {
+        const {navigation} = this.props;
+            key = navigation.getParam('key')
+            this.setState({workKey : key})
+
         const userId = firebase.auth().currentUser.uid
         const ref = firebase.database().ref('/users/' + userId)
         ref.on("value", snapshot => {
-            this.setState({data: snapshot.val()});
+            this.setState({data : snapshot.val()});
         });
-            
+        firebase.database().ref('/work/' + key).on("value", async snapshot => {
+            await this.setState({workdata : snapshot.val()})
+        });
+        
     }
     
+    sumInsurance = () => {
+
+        if(this.state.weekHours > 40) {
+            Alert.alert(
+                '입력 범위 초과',
+                '주 소정 근로시간은 40시간을 초과할 수 없습니다',
+                [
+                    {text : 'ok'}
+                ]
+            )
+        }
+
+        else{
+            var sumInsur = []
+
+            if(this.state.checked1) {
+                sumInsur.push(this.state.in1)
+            }
+
+            if(this.state.checked2) {
+                sumInsur.push(this.state.in2)
+            }
+
+            if(this.state.checked3) {
+                sumInsur.push(this.state.in3)
+            }
+
+            if(this.state.checked4) {
+                sumInsur.push(this.state.in4)
+            }
+
+            // for(var i = 0; i < sumInsur.length; i++) {
+            //     if(sumInsur[i] == undefined) {
+            //         sumInsur.splice(i, 1)
+            //     }
+            // }
+            this.setState({insurance : sumInsur.join(', ')}, this.documentRegister)
+        }
+    }
+
+    documentRegister = () => {
+        console.log(this.state.givetype)
+        firebase.database().ref('/work/' + this.state.workKey + '/document/').set({
+            address : this.state.workdata.address,
+            firstday : this.state.workdata.firstday,
+            lastday : this.state.workdata.lastday,
+            paytype : this.state.workdata.paytype,
+            pay : this.state.workdata.pay,
+            company : this.state.company,
+            head : this.state.head,
+            phonenumber : this.state.phonenumber,
+            workDetail : this.state.workDetail,
+            weekHours : this.state.weekHours,
+            workType : this.state.workType,
+            workstartTime : this.state.workstartTime,
+            workendTime : this.state.workendTime,
+            reststartTime : this.state.reststartTime,
+            restendTime : this.state.restendTime,
+            daytype : this.state.daytype,
+            givetype : this.state.givetype,
+            insurance : this.state.insurance,
+            signature : this.state.signature
+        })
+        Alert.alert(
+            '알림',
+            '등록 완료',
+            [
+                {text : 'ok', onPress : () => this.props.navigation.navigate("More")}
+            ]
+        )
+
+    }
+
+    onePressed(givetype) {
+        this.setState({one: true, two : false, givetype : givetype})
+    }
+
+    twoPressed(givetype) {
+        this.setState({one: false, two : true, givetype : givetype})
+    }
+
+    multiPressed1(option) {
+        this.setState({checked1 : !this.state.checked1, in1 : option})
+    }
+
+    multiPressed2(option) {
+        this.setState({checked2 : !this.state.checked2, in2 : option})
+    }
+
+    multiPressed3(option) {
+        this.setState({checked3 : !this.state.checked3, in3 : option})
+    }
+
+    multiPressed4(option) {
+        this.setState({checked4 : !this.state.checked4, in4 : option})
+    }
+
+    signaturePadChange(base64DataUrl) {
+        this.setState({
+          signature: base64DataUrl
+        })
+        console.log(base64DataUrl)
+    }
+    
+    signaturePadError(error) {
+        console.error(error);
+    }
 
     render() {
         if(this.state.data.permission == false){
@@ -35,6 +181,8 @@ export default class DocumentRegistrationScreen extends Component {
                 {cancelable : false}
             )
         }
+        // console.log(this.state.workKey)
+        // console.log(this.state.workdata)
         return (
             <ScrollView style = {styles.container}>
                 <View>
@@ -45,55 +193,45 @@ export default class DocumentRegistrationScreen extends Component {
                     <View>
                         <Text style = {styles.inputTitle}>사업체명</Text>
                         <TextInput
-                            style = {styles.input} placeholder = "사업체 이름을 입력하세요." autoCapitalize = "none" /*onChangeText={name => this.setState({name})} value={this.state.name}*/
+                            style = {styles.input} placeholder = "사업체 이름을 입력하세요." autoCapitalize = "none" onChangeText={company => this.setState({company})} value={this.state.company}
                         ></TextInput>
                     </View>
 
                     <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>사업주명</Text>
                         <TextInput
-                            style = {styles.input} placeholder = "사업주 이름을 입력하세요." autoCapitalize = "none" /*onChangeText={email => this.setState({email})} value={this.state.email}*/
+                            style = {styles.input} placeholder = "사업주 이름을 입력하세요." autoCapitalize = "none" onChangeText={head => this.setState({head})} value={this.state.head}
                         ></TextInput>
                     </View>
 
                     <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>휴대폰 번호</Text>
                         <TextInput
-                            style = {styles.input} placeholder = "사업자 대표 전화번호를 입력하세요.(숫자만 입력)" autoCapitalize = "none" keyboardType = "decimal-pad"/*onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}*/
+                            style = {styles.input} placeholder = "사업자 대표 전화번호를 입력하세요.(숫자만)" autoCapitalize = "none" keyboardType = "decimal-pad"onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}
                         ></TextInput>
                     </View>
 
                     <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>근로계약기간</Text>
-                        <View style = {{ alignItems : "center", justifyContent : "space-around", flexDirection : 'row'}}>
-                            <TextInput maxLength = {16}
-                                style = {styles.halfinput} placeholder = "근로시작일"  autoCapitalize = "none" /*onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}*/
-                            ></TextInput>
-                            <Text>~</Text>
-                            <TextInput maxLength = {16}
-                                style = {styles.halfinput} placeholder = "근로종료일" autoCapitalize = "none" /*onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}*/
-                            ></TextInput>
-                        </View>
+                        <Text>{this.state.workdata.firstday} ~ {this.state.workdata.lastday}</Text>
                     </View>
 
                     <View style = {{marginTop : 32}}>
-                        <Text style = {styles.inputTitle}>근무장소</Text>
-                        <TextInput
-                            style = {styles.input} placeholder = "근무장소를 입력하세요." autoCapitalize = "none" /*onChangeText={email => this.setState({email})} value={this.state.email}*/
-                        ></TextInput>
+                        <Text style = {styles.inputTitle}>근무지</Text>
+                        <Text>{this.state.workdata.address}</Text>
                     </View>
 
                     <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>업무내용</Text>
                         <TextInput
-                            style = {styles.input} placeholder = "업무내용을 입력하세요." autoCapitalize = "none" /*onChangeText={email => this.setState({email})} value={this.state.email}*/
+                            style = {styles.input} placeholder = "업무내용을 입력하세요." autoCapitalize = "none" onChangeText={workDetail => this.setState({workDetail})} value={this.state.workDetail}
                         ></TextInput>
                     </View>
 
                     <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>주 소정근로시간</Text>
                         <TextInput
-                            style = {styles.input} placeholder = "주 소정근로시간을 입력하세요." autoCapitalize = "none" /*onChangeText={email => this.setState({email})} value={this.state.email}*/
+                            style = {styles.input} placeholder = "주 소정근로시간을 입력하세요." autoCapitalize = "none" keyboardType = "decimal-pad" onChangeText={weekHours => this.setState({weekHours})} value={this.state.weekHours}
                         ></TextInput>
                         <Text style = {styles.underline}>근로시간은 일 8시간, 주 40시간을 초과할 수 없습니다.</Text>
                     </View>
@@ -106,6 +244,8 @@ export default class DocumentRegistrationScreen extends Component {
                             labelFontSize = {12}
                             label = '선택'
                             data = {[{value : "주 7일[근로기준법 제 63조 적용 업종]"}, {value : "주 6일"}, {value : "주 5일"}, {value : "주 4일"}, {value : "주 3일"}, {value : "주 2일"}, {value : "주 1일"}, {value : "주말근무"}, {value : "격일근무"}]}
+                            onChangeText = {workType => this.setState({workType})}
+                            value = {this.state.workType}
                             />
                         </TouchableOpacity>
                     </View>
@@ -114,11 +254,11 @@ export default class DocumentRegistrationScreen extends Component {
                         <Text style = {styles.inputTitle}>근무시간</Text>
                         <View style = {{ alignItems : "center", justifyContent : "space-around", flexDirection : 'row'}}>
                             <TextInput maxLength = {16}
-                                style = {styles.halfinput} placeholder = "근로시작시간"  autoCapitalize = "none" /*onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}*/
+                                style = {styles.halfinput} placeholder = "근로시작시간"  autoCapitalize = "none" onChangeText={workstartTime => this.setState({workstartTime})} value={this.state.workstartTime}
                             ></TextInput>
                             <Text>~</Text>
                             <TextInput maxLength = {16}
-                                style = {styles.halfinput} placeholder = "근로종료시간" autoCapitalize = "none" /*onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}*/
+                                style = {styles.halfinput} placeholder = "근로종료시간" autoCapitalize = "none" onChangeText={workendTime => this.setState({workendTime})} value={this.state.workendTime}
                             ></TextInput>
                         </View>
                     </View>
@@ -127,33 +267,18 @@ export default class DocumentRegistrationScreen extends Component {
                         <Text style = {styles.inputTitle}>휴게시간</Text>
                         <View style = {{ alignItems : "center", justifyContent : "space-around", flexDirection : 'row'}}>
                             <TextInput maxLength = {16}
-                                style = {styles.halfinput} placeholder = "휴게시작시간"  autoCapitalize = "none" /*onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}*/
+                                style = {styles.halfinput} placeholder = "휴게시작시간"  autoCapitalize = "none" onChangeText={reststartTime => this.setState({reststartTime})} value={this.state.reststartTime}
                             ></TextInput>
                             <Text>~</Text>
                             <TextInput maxLength = {16}
-                                style = {styles.halfinput} placeholder = "휴게종료시간" autoCapitalize = "none" /*onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}*/
+                                style = {styles.halfinput} placeholder = "휴게종료시간" autoCapitalize = "none" onChangeText={restendTime => this.setState({restendTime})} value={this.state.restendTime}
                             ></TextInput>
                         </View>
                     </View>
 
                     <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>임금</Text>
-
-                        <View style = {{ alignItems : "center",  flexDirection : 'row'}}>
-                            <View style = {{width : 60, marginRight : 5}}>
-                            <Dropdown
-                            fontSize = {15}
-                            labelFontSize = {12}
-                            label = '선택'
-                            data = {[{value : "일급"}, {value : "주급"}, {value : "월급"}]}
-                            />
-                            </View>
-
-                            <TextInput
-                                style = {styles.littleinput} placeholder = "금액을 입력하세요." autoCapitalize = "none" keyboardType = "decimal-pad"/*onChangeText={email => this.setState({email})} value={this.state.email}*/
-                            ></TextInput>
-                            
-                        </View>
+                        <Text>{this.state.workdata.paytype} {this.state.workdata.pay}</Text>
                     </View>
 
                     <View style = {{marginTop : 32}}>
@@ -165,6 +290,8 @@ export default class DocumentRegistrationScreen extends Component {
                         labelFontSize = {12}
                         label = '선택'
                         data = {[{value : "매일"}, {value : "매주"}, {value : "매월"}]}
+                        onChangeText = {daytype => this.setState({daytype})}
+                        value = {this.state.daytype}
                         />
                         </View>
                     </View>
@@ -173,60 +300,73 @@ export default class DocumentRegistrationScreen extends Component {
                         <Text style = {styles.inputTitle}>임금 지급방법</Text>
                         
                         <View style = {{marginTop : 8}}>
-                            <CheckBox
-                            style = {{}}
-                            label='근로자에게 직접지급'
-                            checked={this.state.checked}
-                            onChange = {() => this.setState({checked : !this.state.checked})}
-                            />
-                            <CheckBox
-                            label='근로자 명의 예금통장에 입금'
-                            checked={!this.state.checked}
-                            onChange = {() => this.setState({checked : this.state.checked})}
-                            />
+                            <Card>
+                                <CardItem body>
+                                    <CheckBox checked = {this.state.one}
+                                    onPress = {() => this.onePressed('근로자에게 직접지급')}
+                                    style = {{marginRight : 20, borderColor : "#0C00AF"}}
+                                    /><Text style={{color : "#8A8F9E"}}>근로자에게 직접지급</Text>
+                                </CardItem>
+
+                                <CardItem body>
+                                    <CheckBox checked = {this.state.two}
+                                    onPress = {() => this.twoPressed('근로자 명의 예금통장에 입금')}
+                                    style = {{marginRight : 20, borderColor : "#0C00AF"}}
+                                    /><Text style={{color : "#8A8F9E"}}>근로자 명의 예금통장에 입금</Text>
+                                </CardItem>
+                            </Card>
+                            
                         </View>
                     </View>
 
                     <View style = {{marginTop : 32}}>
-                        <Text style = {styles.inputTitle}>사회보험적용여부(셀렉트박스)</Text> 
+                        <Text style = {styles.inputTitle}>사회보험적용여부</Text> 
 
                         <View style = {{marginTop : 8}}>
-                            <CheckBox
-                            style = {{}}
-                            label='고용보험'
-                            checked={this.state.checked1}
-                            onChange = {() => this.setState({checked1 : !this.state.checked1})}
-                            />
-                            
-                            <CheckBox
-                            style = {{}}
-                            label='산재보험'
-                            checked={this.state.checked2}
-                            onChange = {() => this.setState({checked2 : !this.state.checked2})}
-                            />
-                            
-                            <CheckBox
-                            style = {{}}
-                            label='국민연금'
-                            checked={this.state.checked3}
-                            onChange = {() => this.setState({checked3 : !this.state.checked3})}
-                            />
-                            
-                            <CheckBox
-                            style = {{}}
-                            label='건강보험'
-                            checked={this.state.checked4}
-                            onChange = {() => this.setState({checked4 : !this.state.checked4})}
-                            />
+
+                            <Card>
+                                <CardItem body>
+                                    <CheckBox checked = {this.state.checked1}
+                                    onPress = {() => this.multiPressed1('고용보험')}
+                                    style = {{marginRight : 20, borderColor : "#0C00AF"}}
+                                    /><Text style={{color : "#8A8F9E"}}>고용보험</Text>
+                                </CardItem>
+
+                                <CardItem body>
+                                    <CheckBox checked = {this.state.checked2}
+                                    onPress = {() => this.multiPressed2('산재보험')}
+                                    style = {{marginRight : 20, borderColor : "#0C00AF"}}
+                                    /><Text style={{color : "#8A8F9E"}}>산재보험</Text>
+                                </CardItem>
+
+                                <CardItem body>
+                                    <CheckBox checked = {this.state.checked3}
+                                    onPress = {() => this.multiPressed3('국민연금')}
+                                    style = {{marginRight : 20, borderColor : "#0C00AF"}}
+                                    /><Text style={{color : "#8A8F9E"}}>국민연금</Text>
+                                </CardItem>
+
+                                <CardItem body>
+                                    <CheckBox checked = {this.state.checked4}
+                                    onPress = {() => this.multiPressed4('건강보험')}
+                                    style = {{marginRight : 20, borderColor : "#0C00AF"}}
+                                    /><Text style={{color : "#8A8F9E"}}>건강보험</Text>
+                                </CardItem>
+                            </Card>
                         </View>
                     </View>
 
-                    <View style = {{marginTop : 32}}>
-                        <Text style = {styles.inputTitle}>전자서명</Text> 
+                    <View style = {{flex : 1 , marginTop : 32}}>
+                        <Text style = {styles.inputTitle}>전자서명</Text>
+                        <SignaturePad
+                            onError = {(error) => this.SignaturePadError(error)}
+                            onChange = {(sig) => this.signaturePadChange(sig)}
+                            style = {styles.signaturePad}
+                        />
                     </View>
                 </View>
 
-                <TouchableOpacity style={styles.button} /*onPress={this.handleSignUp}*/>
+                <TouchableOpacity style={styles.button} onPress={this.sumInsurance}>
                     <Text style = {{color:"#FFF", fontWeight: "500"}}>작성 완료</Text>
                 </TouchableOpacity>
 
@@ -238,7 +378,7 @@ export default class DocumentRegistrationScreen extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex : 1
+        flex : 2
     },
     greeting: {
         marginTop : 32,
@@ -304,5 +444,10 @@ const styles = StyleSheet.create({
         alignItems : "center",
         justifyContent : "center",
         marginBottom : 32
+    },
+    signaturePad : {
+        flex:1,
+        margin: 10,
+        backgroundColor: '#eee',
     }
 });

@@ -1,65 +1,31 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
-import Signature from 'react-native-signature-canvas';
+import React, {Component} from 'react';
+import { StyleSheet, Text, View, Image, TouchableHighlight } from 'react-native';
+import SignaturePad from 'react-native-signature-pad'
 
-export default class SignatureScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { signature: null };
+export default class SignatureScreen extends Component{
+
+  state = {
+    sign : ''
   }
-
-  handleSignature = signature => {
-    this.setState({ signature });
+  render() {
+    return (
+      <View style={{flex: 1}}>
+          <SignaturePad onError={this._signaturePadError}
+                        onChange={this._signaturePadChange}
+                        style={{flex: 1, backgroundColor: 'white'}}
+                        
+                        />
+                        
+      </View>
+    )
   };
 
-  render() {
-    const style = `.m-signature-pad--footer
-    .button {
-      background-color: #0C00AF;
-      color: #FFF;
-    }`;
-    return (
-      <View style={{ flex: 1 }}>
-        <View style={styles.preview}>
-          {this.state.signature ? (
-            <Image
-              resizeMode={"contain"}
-              style={{ width: 335, height: 114 }}
-              source={{ uri: this.state.signature }}
-            />
-          ) : null}
-        </View>
-        <Signature
-          onOK={this.handleSignature}
-          descriptionText="Sign"
-          clearText="Clear"
-          confirmText="Save"
-          webStyle={style}
-        />
-      </View>
-    );
-  }
-}
+  _signaturePadError = (error) => {
+    console.error(error);
+  };
 
-const styles = StyleSheet.create({
-  preview: {
-    //width: 335,
-    height: 114,
-    backgroundColor: "#F8F8F8",
-    justifyContent: "center",
-    alignItems: "center",
-    //marginTop: 15
-  },
-  previewText: {
-    color: "#FFF",
-    fontSize: 14,
-    height: 40,
-    lineHeight: 40,
-    paddingLeft: 10,
-    paddingRight: 10,
-    backgroundColor: "#69B2FF",
-    width: 120,
-    textAlign: "center",
-    marginTop: 10
-  }
-});
+  _signaturePadChange = ({base64DataUrl}) => {
+    this.setState({sign : base64DataUrl})
+  };
+}
+ 
