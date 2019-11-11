@@ -15,6 +15,15 @@ export default class RegisterUserScreen extends Component {
     };
 
     handleSignUp = () => {
+
+        if(!(/^(?:(010-?\d{4})|(01[1|6|7|8|9]-?\d{3,4}))-?\d{4}$/.test(this.state.phonenumber))) {
+            Alert.alert(
+                '휴대폰 번호를 올바르게 입력해주세요',
+                'xxx-xxxx-xxxx',
+                [{text: 'ok'}]
+            )
+        }
+
         firebase
             .auth()
             .createUserWithEmailAndPassword(this.state.email, this.state.password)
@@ -67,7 +76,7 @@ export default class RegisterUserScreen extends Component {
                     <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>Phone Number</Text>
                         <TextInput
-                            style = {styles.input} placeholder = "전화번호를 입력하세요.(숫자만 입력)" autoCapitalize = "none" onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}
+                            style = {styles.input} placeholder = "전화번호를 입력하세요." maxLength = {14} autoCapitalize = "none" keyboardType = "decimal-pad" onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}
                         ></TextInput>
                     </View>
 

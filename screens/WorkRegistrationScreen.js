@@ -7,7 +7,7 @@ export default class WorkRegistrationScreen extends Component {
     
     constructor(props){
         super(props);
-        this.state = { data : []}
+        this.state = { data : [] }
     }
 
     state = {
@@ -15,7 +15,7 @@ export default class WorkRegistrationScreen extends Component {
         address : '',
         startday : '',
         endday : '',
-        member : '',
+        member : 0,
         paytype : '',
         pay : '',
         key : ''
@@ -27,7 +27,6 @@ export default class WorkRegistrationScreen extends Component {
         ref.on("value", snapshot => {
             this.setState({data: snapshot.val()});
         });
-            
     }
     
     handleRegister = () => {
@@ -43,6 +42,10 @@ export default class WorkRegistrationScreen extends Component {
             pay : this.state.pay
         }).key
         this.setState({key : pushkey})
+
+        firebase.database().ref('/work/' + pushkey).update({
+            key : pushkey
+        })
         Alert.alert(
             '알림',
             '등록 완료',
@@ -54,10 +57,10 @@ export default class WorkRegistrationScreen extends Component {
                 }
             ]
         )
-    }    
+    }
+    
     render() {
-
-        if(this.state.data.permission == false){
+        if(this.state.data.permission == false) {
             Alert.alert(
                 '권한 없음',
                 '기업회원만 접근 가능합니다.',
@@ -66,6 +69,15 @@ export default class WorkRegistrationScreen extends Component {
             )
         }
 
+        if(this.state.data.signature == '') {
+            Alert.alert(
+                '접근 실패',
+                '전자서명을 등록해주세요.',
+                [{text : 'OK', onPress : () => this.props.navigation.navigate("More")}],
+                {cancelable : false}
+            )
+        }
+        
         return (
                 <ScrollView style = {styles.container}>
                     <View>

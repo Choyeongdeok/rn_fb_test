@@ -12,6 +12,8 @@
     "expo": "^35.0.0",
     "expo-barcode-scanner": "^7.0.0",
     "expo-constants": "~7.0.0",
+    "expo-gl": "^7.0.0",
+    "expo-pixi": "^1.2.0",
     "firebase": "^7.1.0",
     "moment": "^2.24.0",
     "native-base": "^2.13.8",
@@ -27,10 +29,12 @@
     "react-native-signature-canvas": "^1.5.1",
     "react-native-signature-capture": "^0.4.10",
     "react-native-signature-pad": "^0.1.0",
+    "react-native-signature-view": "^0.3.6",
     "react-native-web": "^0.11.7",
     "react-navigation": "^4.0.10",
     "react-navigation-stack": "^1.9.3",
-    "react-navigation-tabs": "^2.5.5"
+    "react-navigation-tabs": "^2.5.5",
+    "rn-modal-picker": "^0.2.4"
   },
   "devDependencies": {
     "babel-preset-expo": "^7.0.0"

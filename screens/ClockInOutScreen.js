@@ -62,7 +62,9 @@ export default class ClockInOutScreen extends Component {
             style={{
                 flex: 1,
                 flexDirection: 'column',
-                justifyContent: 'flex-end'
+                justifyContent: 'flex-end',
+                marginTop : 32,
+                marginBottom : 32
             }}>
             <BarCodeScanner
                 onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
 import * as firebase from 'firebase';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
@@ -15,6 +15,7 @@ import {Ionicons} from '@expo/vector-icons';
 
 //홈
 import HomeScreen from './screens/HomeScreen';
+import RequestScreen from './screens/RequestScreen'
 
 //출퇴근 QR코드
 import ClockInOutScreen from './screens/ClockInOutScreen';
@@ -35,6 +36,8 @@ import QuestionsScreen from './screens/QuestionsScreen';
 import WorkRegistrationScreen from './screens/WorkRegistrationScreen'
 import NoticeScreen from './screens/NoticeScreen';
 import DocumentRegistrationScreen from './screens/DocumentRegistrationScreen';
+import CheckRequestScreen from './screens/CheckRequestScreen'
+import RequestListScreen from './screens/RequestListScreen'
 
 console.disableYellowBox = true;
 
@@ -52,10 +55,24 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const HomeStack = createStackNavigator({
-Home : {
+    Home : {
         screen : HomeScreen,
         navigationOptions : {
+            headerLeft : <Text style = {{marginLeft : 20}}></Text>,
             headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>홈</Text></View>,
+            headerRight : <TouchableOpacity onPress = {() => {
+                firebase.auth().signOut()
+                }
+            }>
+                            <Text  style = {{marginRight : 20}}>로그아웃</Text>
+                            </TouchableOpacity>
+        }
+    },
+    Request : {
+        screen : RequestScreen,
+        navigationOptions : {
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>신청하기</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}></Text>
         }
     }
 })
@@ -157,10 +174,24 @@ const MoreStack = createStackNavigator({
             
         }
     },
-    Questions:{
+    Questions : {
         screen: QuestionsScreen,
         navigationOptions : {
             headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>문의사항</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}></Text>
+        }
+    },
+    CheckRequest : {
+        screen : CheckRequestScreen,
+        navigationOptions : {
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>나의 구인 목록</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}></Text>
+        }
+    },
+    RequestList : {
+        screen : RequestListScreen,
+        navigationOptions : {
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>신청자 목록</Text></View>,
             headerRight : <Text style = {{marginRight : 20}}></Text>
         }
     }

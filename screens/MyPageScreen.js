@@ -32,7 +32,6 @@ export default class MyPageScreen extends Component {
     };
     
     render() {
-        console.log(typeof(this.state.data))
         return (
             <View style = {styles.container}>
                 <FlatList 

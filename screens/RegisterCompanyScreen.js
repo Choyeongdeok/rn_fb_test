@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {ScrollView, View, Text, StyleSheet} from 'react-native';
+import {ScrollView, View, Text, StyleSheet, Alert} from 'react-native';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import * as firebase from 'firebase';
+import { number } from 'prop-types';
 
 
 export default class RegisterUserScreen extends Component {
@@ -17,28 +18,44 @@ export default class RegisterUserScreen extends Component {
     };
 
     handleSignUp = () => {
-        firebase
-            .auth()
-            .createUserWithEmailAndPassword(this.state.email, this.state.password)
-            .then((res) => {
-                firebase.database().ref('/users/' + res.user.uid).set({
+        if(!(/^(?:(010-?\d{4})|(01[1|6|7|8|9]-?\d{3,4}))-?\d{4}$/.test(this.state.phonenumber))) {
+            Alert.alert(
+                '휴대폰 번호를 올바르게 입력해주세요',
+                'xxx-xxxx-xxxx',
+                [{text: 'ok'}]
+            )
+        }
 
-                    email : this.state.email,
-                    name : this.state.name,
-                    phonenumber : this.state.phonenumber,
-                    companyname : this.state.companyname,
-                    companynumber : this.state.companynumber,
-                    permission : true
+        else if (Number(this.state.companynumber).length < 10) {
+            Alert.alert(
+                '입력 오류',
+                '사업자 번호를 올바르게 입력해주세요',
+                [{text: 'ok'}]
+            )
+        }
+
+        else{
+            firebase
+                .auth()
+                .createUserWithEmailAndPassword(this.state.email, this.state.password)
+                .then((res) => {
+                    firebase.database().ref('/users/' + res.user.uid).set({
+
+                        email : this.state.email,
+                        name : this.state.name,
+                        phonenumber : this.state.phonenumber,
+                        companyname : this.state.companyname,
+                        companynumber : this.state.companynumber,
+                        permission : true
+                    })
                 })
-            })
-            .then(userCredentials => {
-                return userCredentials.user.updateProfile({
-                    displayName : this.state.name
-                });
-            })
-            
-            .catch(error => this.setState({errorMessage: error.message}));
-        
+                .then(userCredentials => {
+                    return userCredentials.user.updateProfile({
+                        displayName : this.state.name
+                    });
+                })
+                .catch(error => this.setState({errorMessage: error.message}));
+        }
 
     }
 
@@ -66,7 +83,7 @@ export default class RegisterUserScreen extends Component {
                     <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>Company Number</Text>
                         <TextInput
-                            style = {styles.input} placeholder = "사업자 등록번호를 입력하세요.(000-00-00000)" autoCapitalize = "none" onChangeText={companynumber => this.setState({companynumber})} value={this.state.companynumber}
+                            style = {styles.input} placeholder = "사업자 등록번호 열 자리를 입력하세요.(숫자만)" maxLength = {10} autoCapitalize = "none" keyboardType = "decimal-pad" onChangeText={companynumber => this.setState({companynumber})} value={this.state.companynumber}
                         ></TextInput>
                     </View>
 
@@ -87,7 +104,7 @@ export default class RegisterUserScreen extends Component {
                     <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>Phone Number</Text>
                         <TextInput
-                            style = {styles.input} placeholder = "담당자 전화번호를 입력하세요.(숫자만 입력)" autoCapitalize = "none" onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}
+                            style = {styles.input} placeholder = "담당자 휴대폰 번호를 입력하세요.(숫자만)" maxLength = {14} autoCapitalize = "none" keyboardType = "decimal-pad" onChangeText={phonenumber => this.setState({phonenumber})} value={this.state.phonenumber}
                         ></TextInput>
                     </View>
 

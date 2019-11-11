@@ -47,7 +47,6 @@ export default class ClockRecordScreen extends Component {
             if(snapVal == null) {
                 clockArray.push({value : ["출근 이력이 없습니다."]})
                 this.setState({data : clockArray})
-                console.log(clockArray)
             }
             else {
                 for (var key in snapVal) {
@@ -93,7 +92,7 @@ export default class ClockRecordScreen extends Component {
             var snapVal = snapshot.val();
             var clockArray = [];
             for (var key in snapVal) {
-                if (snapVal.hasOwnProperty(key)){
+                if (snapVal.hasOwnProperty(key)) {
                     await  clockArray.push({time:snapVal[key].clockinout[0], value:snapVal[key].clockinout[1] })   
                 }
                 else {

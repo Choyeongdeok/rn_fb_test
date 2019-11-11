@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import { Text, StyleSheet, View, FlatList, TouchableOpacity, TextInput, Alert, ScrollView } from 'react-native'
+import { Text, StyleSheet, View, FlatList, TouchableOpacity, TextInput,  Image, Alert, ScrollView } from 'react-native'
 import * as firebase from 'firebase'
 import {Dropdown} from 'react-native-material-dropdown'
 import {Card, CardItem, CheckBox} from 'native-base'
-import SignaturePad from 'react-native-signature-pad'
+import * as ExpoPixi from 'expo-pixi';
 
 export default class DocumentRegistrationScreen extends Component {
 
@@ -16,7 +16,6 @@ export default class DocumentRegistrationScreen extends Component {
             checked2 : false,
             checked3 : false,
             checked4 : false,
-            signature : ""
         }
     }
 
@@ -95,17 +94,12 @@ export default class DocumentRegistrationScreen extends Component {
                 sumInsur.push(this.state.in4)
             }
 
-            // for(var i = 0; i < sumInsur.length; i++) {
-            //     if(sumInsur[i] == undefined) {
-            //         sumInsur.splice(i, 1)
-            //     }
-            // }
+
             this.setState({insurance : sumInsur.join(', ')}, this.documentRegister)
         }
     }
 
     documentRegister = () => {
-        console.log(this.state.givetype)
         firebase.database().ref('/work/' + this.state.workKey + '/document/').set({
             address : this.state.workdata.address,
             firstday : this.state.workdata.firstday,
@@ -124,8 +118,7 @@ export default class DocumentRegistrationScreen extends Component {
             restendTime : this.state.restendTime,
             daytype : this.state.daytype,
             givetype : this.state.givetype,
-            insurance : this.state.insurance,
-            signature : this.state.signature
+            insurance : this.state.insurance
         })
         Alert.alert(
             '알림',
@@ -161,17 +154,6 @@ export default class DocumentRegistrationScreen extends Component {
         this.setState({checked4 : !this.state.checked4, in4 : option})
     }
 
-    signaturePadChange(base64DataUrl) {
-        this.setState({
-          signature: base64DataUrl
-        })
-        console.log(base64DataUrl)
-    }
-    
-    signaturePadError(error) {
-        console.error(error);
-    }
-
     render() {
         if(this.state.data.permission == false){
             Alert.alert(
@@ -181,8 +163,7 @@ export default class DocumentRegistrationScreen extends Component {
                 {cancelable : false}
             )
         }
-        // console.log(this.state.workKey)
-        // console.log(this.state.workdata)
+
         return (
             <ScrollView style = {styles.container}>
                 <View>
@@ -356,13 +337,14 @@ export default class DocumentRegistrationScreen extends Component {
                         </View>
                     </View>
 
-                    <View style = {{flex : 1 , marginTop : 32}}>
+                    <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>전자서명</Text>
-                        <SignaturePad
-                            onError = {(error) => this.SignaturePadError(error)}
-                            onChange = {(sig) => this.signaturePadChange(sig)}
-                            style = {styles.signaturePad}
-                        />
+                        <View style = {{ marginTop : 8}}>
+                            <Image
+                            style = {{width : 100, height : 70,     borderColor : '#0C00AF', borderWidth : 1}}
+                            source = {{uri : this.state.data.signature}}
+                            />
+                        </View>
                     </View>
                 </View>
 

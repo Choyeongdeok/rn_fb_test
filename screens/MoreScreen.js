@@ -10,7 +10,8 @@ export default class MoreScreen extends Component {
             data : [
                 {key : "공지사항", value : "Notice"},
                 {key : "문의사항", value : "Questions"},
-                {key : "구인 등록", value : "WorkRegistration"},
+                {key : "구인 등록(기업 회원)", value : "WorkRegistration"},
+                {key : "신청자 조회(기업 회원)", value : "CheckRequest"}
                 //{key : "전자근로계약서 등록", value : "DocumentRegistration"}
                 
             ]

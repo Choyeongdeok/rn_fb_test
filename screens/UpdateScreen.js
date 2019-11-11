@@ -16,7 +16,6 @@ export default class UpdateScreen extends Component {
         ref.on("value", snapshot => {
             this.setState({data: snapshot.val()});
         });
-            
     }
 
     handleUpdate = () => {
