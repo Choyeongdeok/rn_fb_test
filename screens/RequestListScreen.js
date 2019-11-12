@@ -1,33 +1,7 @@
 import React, { Component } from 'react'
-import { Text, View, FlatList, StyleSheet } from 'react-native'
+import { Text, View, FlatList, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native'
 import * as firebase from 'firebase'
 import {ListItem, CheckBox, Body} from 'native-base'
-
-function Item({index1}) {
-
-    state = {
-        checked : false
-    }
-//함수 해결하기
-    return (
-        <View style = {styles.item}>
-            <ListItem>
-                <CheckBox
-                checked = {this.state.checked}
-                onPress = {this.changeCheck}
-                />
-                <Body>
-                    <View style = {{marginLeft : 8}}>
-                    <Text>{index1}</Text>
-                    </View>
-                </Body>
-            </ListItem>
-        </View>
-    )
-}
-changeCheck = () => {
-    this.setState({checked : !this.state.checked})
-}
 
 export default class RequestListScreen extends Component {
     
@@ -35,9 +9,12 @@ export default class RequestListScreen extends Component {
         super(props);
         this.state = {
             key : '',
-            data : []
+            data : [],
+            checked : []
         }
     }
+
+
     componentDidMount() {
         const {navigation} = this.props;
         selectedKey = navigation.getParam('selectedKey')
@@ -51,28 +28,77 @@ export default class RequestListScreen extends Component {
                     memberList.push(snapVal[key])
                 }
                 if (memberList[0] == null) {
-                    memberList.push('신청자가 없습니다')
+                    memberList.push({name : '신청자가 없습니다'})
                 }
-                console.log(memberList)
+                // console.log(memberList)
                 await this.setState({data : memberList})
                 
             }
         )
     }
 
-    
+    changeCheck = (index) => {
+        let checked = [...this.state.checked];
+        checked[index] = !checked[index];
+        this.setState({ checked });
+    }
+
+    selectMember = () => {
+        let checked = [...this.state.checked];
+        var count = 0
+        for (var index in checked) {
+            if (checked[index]) {
+                count++
+            }
+        }
+        firebase.database().ref('/work/' + this.state.key).on(
+            "value", async (snapshot) => {
+                var member = snapshot.val().member;
+                if(count != member) {
+                    Alert.alert(
+                        '선택 실패',
+                        '선택한 인원 수가 모집 인원 수와 일치하지 않습니다.',
+                        [{text : "ok"}]
+                    )
+                }
+                
+                else {
+                    console.log(snapshot.val().document)
+                }
+            }
+        )
+        
+    }
+
     render() {
+        let { data, checked } = this.state;
         return (
-            <View>
+            <ScrollView>
                 <FlatList
                 data = {this.state.data}
-                renderItem = {({item}) =>
-                <Item
-                    index1 = {item.name}
-                />
+                extraData={this.state}
+                renderItem = {({item, index}) =>
+                    <View style = {styles.item}>
+                        <ListItem>
+                            <CheckBox
+                            style = {{borderColor : "#0C00AF"}}
+                            checked = {checked[index]}
+                            onPress = {() => this.changeCheck(index)}
+                            />
+                            <Body>
+                                <View style = {{marginLeft : 8}}>
+                                <Text>{item.name}</Text>
+                                </View>
+                            </Body>
+                        </ListItem>
+                    </View>
                 }
                 />
-            </View>
+
+                <TouchableOpacity style={styles.button} onPress={this.selectMember}>
+                    <Text style = {{color:"#FFF", fontWeight: "500"}}>선택 완료</Text>
+                </TouchableOpacity>
+            </ScrollView>
         )
     }
 }
@@ -85,4 +111,14 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.5,
         marginTop : 8,
     },
+    button : {
+        marginHorizontal : 30,
+        backgroundColor: "#0C00AF",
+        borderRadius : 4,
+        height : 52,
+        alignItems : "center",
+        justifyContent : "center",
+        marginBottom : 32,
+        marginTop : 32
+    }
 })
