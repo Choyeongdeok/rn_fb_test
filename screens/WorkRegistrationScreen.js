@@ -53,7 +53,7 @@ export default class WorkRegistrationScreen extends Component {
                 {text : 'ok',  onPress : () =>
                     this.props.navigation.navigate("DocumentRegistration", {
                         key : this.state.key
-                    })
+                    }) 
                 }
             ]
         )

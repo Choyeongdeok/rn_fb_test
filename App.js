@@ -29,6 +29,7 @@ import CertificationScreen from './screens/CertificationScreen';
 import QualificationScreen from './screens/QualificationScreen';
 import AccountNumberScreen from './screens/AccountNumberScreen';
 import SignatureScreen from './screens/SignatureScreen';
+import SaveDocumentScreen from './screens/SaveDocumentScreen'
 
 //더보기
 import MoreScreen from './screens/MoreScreen';
@@ -142,6 +143,13 @@ const MyPageStack = createStackNavigator({
             headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>전자서명 등록</Text></View>,
             headerRight : <Text style = {{marginRight : 20}}></Text>
         }
+    },
+    SaveDocument : {
+        screen : SaveDocumentScreen,
+        navigationOptions : {
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>전자근로계약서 저장</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}></Text>
+        }
     }
 })
 
@@ -184,7 +192,7 @@ const MoreStack = createStackNavigator({
     CheckRequest : {
         screen : CheckRequestScreen,
         navigationOptions : {
-            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>나의 구인 목록</Text></View>,
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>나의 구인글(기업)</Text></View>,
             headerRight : <Text style = {{marginRight : 20}}></Text>
         }
     },

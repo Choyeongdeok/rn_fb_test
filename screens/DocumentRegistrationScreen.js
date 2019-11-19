@@ -118,7 +118,8 @@ export default class DocumentRegistrationScreen extends Component {
             restendTime : this.state.restendTime,
             daytype : this.state.daytype,
             givetype : this.state.givetype,
-            insurance : this.state.insurance
+            insurance : this.state.insurance,
+            signature : this.state.data.signature
         })
         Alert.alert(
             '알림',
@@ -426,10 +427,5 @@ const styles = StyleSheet.create({
         alignItems : "center",
         justifyContent : "center",
         marginBottom : 32
-    },
-    signaturePad : {
-        flex:1,
-        margin: 10,
-        backgroundColor: '#eee',
     }
 });

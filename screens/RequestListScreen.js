@@ -10,7 +10,9 @@ export default class RequestListScreen extends Component {
         this.state = {
             key : '',
             data : [],
-            checked : []
+            checked : [],
+            uId : [],
+
         }
     }
 
@@ -37,18 +39,23 @@ export default class RequestListScreen extends Component {
         )
     }
 
-    changeCheck = (index) => {
+    changeCheck = (index, Id) => {
         let checked = [...this.state.checked];
+        let uId = [...this.state.uId]
         checked[index] = !checked[index];
-        this.setState({ checked });
+        uId[index] = Id
+        this.setState({ checked, uId });
     }
 
     selectMember = () => {
         let checked = [...this.state.checked];
+        let uId = [...this.state.uId]
+        memberId = []
         var count = 0
         for (var index in checked) {
             if (checked[index]) {
                 count++
+                memberId.push(uId[index])
             }
         }
         firebase.database().ref('/work/' + this.state.key).on(
@@ -57,20 +64,28 @@ export default class RequestListScreen extends Component {
                 if(count != member) {
                     Alert.alert(
                         '선택 실패',
-                        '선택한 인원 수가 모집 인원 수와 일치하지 않습니다.',
+                        `선택한 인원 수가 모집 인원 수(${member}명) 와 일치하지 않습니다.`,
                         [{text : "ok"}]
                     )
                 }
                 
                 else {
-                    console.log(snapshot.val().document)
+                    for(i in memberId) {
+                        firebase.database().ref('/users/' + memberId[i] + '/mydocument/').push(
+                            snapshot.val().document
+                        )
+                    }
+                    Alert.alert(
+                        '선택 완료',
+                        `${member}명에게 전자근로계약서 양식을 전달하였습니다.`,
+                        [{text : "ok"}]
+                    )
                 }
             }
         )
-        
     }
 
-    render() {
+    render() { 
         let { data, checked } = this.state;
         return (
             <ScrollView>
@@ -83,7 +98,7 @@ export default class RequestListScreen extends Component {
                             <CheckBox
                             style = {{borderColor : "#0C00AF"}}
                             checked = {checked[index]}
-                            onPress = {() => this.changeCheck(index)}
+                            onPress = {() => this.changeCheck(index, item.userId)}
                             />
                             <Body>
                                 <View style = {{marginLeft : 8}}>

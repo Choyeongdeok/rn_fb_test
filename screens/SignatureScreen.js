@@ -20,6 +20,7 @@ export default class SignatureScreen extends Component {
         const ref = firebase.database().ref('/users/' + userId)
         ref.on("value", snapshot => {
             this.setState({data: snapshot.val()});
+            console.log(snapshot.val().signature)
         });
     }
 
