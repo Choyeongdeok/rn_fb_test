@@ -1,7 +1,7 @@
 import React, { Component, useRef } from 'react'
 import { Text, View, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native'
 import * as firebase from 'firebase'
-import{ captureRef as takeSnapshotAsync} from 'react-native-view-shot'
+import {captureScreen} from 'react-native-view-shot'
 
 export default class QualificationScreen extends Component {
 
@@ -9,12 +9,14 @@ export default class QualificationScreen extends Component {
         super(props);
         this.state = {
             data : [],
-            signature : '',
-            uri:""
+            signature : ''
         }
     }
-    
 
+    state = {
+        imageURI : ""
+    }
+    
     componentDidMount() {
         const {navigation} = this.props;
         data = navigation.getParam('data')
@@ -32,89 +34,134 @@ export default class QualificationScreen extends Component {
         )
     }
 
-    captureDocument = async () => {
-        const doc_result = await takeSnapshotAsync(this.pageView, {
-            format: 'jpeg', // 'png' also supported
-            quality: 1, // quality 0 for very poor 1 for very good
-            result: 'file' // 
-        })
-        console.log(doc_result)
-        
+    takeScreenShot = () => {
+
         const userId = firebase.auth().currentUser.uid
-        firebase.database().ref('/users/' + userId + '/savedDocument/').push({
-            uri : doc_result
+        captureScreen({
+            format: "jpg",
+            quality: 1
         })
+        .then(
+            uri => this.setState({ imageURI : uri }),
+            // uri => console.log(uri),
+            uri => firebase.database().ref('/users/' + userId + '/savedDocument/').push({
+                imageuri : uri
+            }),
+            error => console.error("Oops, Something Went Wrong", error)
+        );
+        // console.log(this.state.imageURI);
+        // const userId = firebase.auth().currentUser.uid
+        // firebase.database().ref('/users/' + userId + '/savedDocument/').push({
+        //     imageuri : this.state.imageURI
+        // })
     }
 
+    // captureDocument = async () => {
+    //     const doc_result = await takeSnapshotAsync(this.pageView, {
+    //         format: 'jpeg', // 'png' also supported
+    //         quality: 1, // quality 0 for very poor 1 for very good
+    //         result: 'file' // 
+    //     })
+    //     console.log(doc_result)
+        
+    //     const userId = firebase.auth().currentUser.uid
+    //     firebase.database().ref('/users/' + userId + '/savedDocument/').push({
+    //         uri : doc_result
+    //     })
+    // }
+
+    // captureDocument = () => {
+    //     const userId = firebase.auth().currentUser.uid
+    //     firebase.database().ref('/users/' + userId + '/savedDocument/').push({
+    //         imageuri : this.state.imageURI
+    //     })
+    // }
+
     render() {
+
         return (
 
             <ScrollView>
                 <View>
-                    <View collapsable={false}
-                    ref={view => {
-                    this.pageView = view;
-                    }}>
+
                     <Text style = {styles.greeting}>전자근로계약서</Text>
                     
                     <View style = {styles.form}>
-                        <View>
-                            <Text style = {styles.inputTitle}>사업체명</Text>
-                            <Text style = {styles.context}>{this.state.data[1]}</Text>
-                        </View>
-                        <View style = {{marginTop : 16}}>
-                            <Text style = {styles.inputTitle}>사업주명</Text>
-                            <Text style = {styles.context}>{this.state.data[5]}</Text>
-                        </View>
-                        <View style = {{marginTop : 16}}>
+                        <View style = {{ alignItems : "center", justifyContent : "space-around", flexDirection : 'row'}}>
+                            <View style = {{marginTop : 12}}>
+                                <Text style = {styles.inputTitle}>사업체명</Text>
+                                <Text style = {styles.context}>{this.state.data[1]}</Text>
+                            </View>
+                            <View style = {{marginTop : 12}}>
+                                <Text style = {styles.inputTitle}>사업주명</Text>
+                                <Text style = {styles.context}>{this.state.data[5]}</Text>
+                            </View>
+                            <View style = {{marginTop : 12}}>
                             <Text style = {styles.inputTitle}>휴대폰 번호</Text>
                             <Text style = {styles.context}>{this.state.data[10]}</Text>
                         </View>
-                        <View style = {{marginTop : 16}}>
+                        </View>
+
+                        <View style = {{ alignItems : "center", justifyContent : "space-around", flexDirection : 'row'}}>
+                        <View style = {{marginTop : 12}}>
                             <Text style = {styles.inputTitle}>근로계약기간</Text>
                             <Text style = {styles.context}>{this.state.data[3]} ~ {this.state.data[7]}</Text>
                         </View>
-                        <View style = {{marginTop : 16}}>
-                            <Text style = {styles.inputTitle}>근무지</Text>
-                            <Text style = {styles.context}>{this.state.data[0]}</Text>
+
+                    </View>
+
+                        <View style = {{ alignItems : "center", justifyContent : "space-around", flexDirection : 'row'}}>
+                            <View style = {{marginTop : 12}}>
+                                <Text style = {styles.inputTitle}>근무지</Text>
+                                <Text style = {styles.context}>{this.state.data[0]}</Text>
+                            </View>
+                            <View style = {{marginTop : 12}}>
+                                <Text style = {styles.inputTitle}>업무내용</Text>
+                                <Text style = {styles.context}>{this.state.data[15]}</Text>
+                            </View>
+                            <View style = {{marginTop : 12}}>
+                                <Text style = {styles.inputTitle}>휴게시간</Text>
+                                <Text style = {styles.context}>{this.state.data[12]} ~ {this.state.data[11]}</Text>
+                            </View>
                         </View>
-                        <View style = {{marginTop : 16}}>
-                            <Text style = {styles.inputTitle}>업무내용</Text>
-                            <Text style = {styles.context}>{this.state.data[15]}</Text>
+
+                        <View style = {{ alignItems : "center", justifyContent : "space-around", flexDirection : 'row'}}>
+                            <View style = {{marginTop : 12}}>
+                                <Text style = {styles.inputTitle}>주 소정근로시간</Text>
+                                <Text style = {styles.context}>{this.state.data[14]}시간</Text>
+                            </View>
+                            <View style = {{marginTop : 12}}>
+                                <Text style = {styles.inputTitle}>근무시간</Text>
+                                <Text style = {styles.context}>{this.state.data[18]} ~ {this.state.data[17]}</Text>
+                            </View>
+                            <View style = {{marginTop : 12}}>
+                                <Text style = {styles.inputTitle}>근무형태</Text>
+                                <Text style = {styles.context}>{this.state.data[16]}</Text>
+                            </View>
                         </View>
-                        <View style = {{marginTop : 16}}>
-                            <Text style = {styles.inputTitle}>주 소정근로시간</Text>
-                            <Text style = {styles.context}>{this.state.data[14]}시간</Text>
+
+                        <View style = {{ alignItems : "center", justifyContent : "space-around", flexDirection : 'row'}}>
+
+                            <View style = {{marginTop : 12}}>
+                                <Text style = {styles.inputTitle}>임금</Text>
+                                <Text style = {styles.context}>{this.state.data[9]} {this.state.data[8]}원</Text>
+                            </View>
+
+                            <View style = {{marginTop : 12}}>
+                                <Text style = {styles.inputTitle}>임금지급방법</Text>
+                                <Text style = {styles.context}>{this.state.data[4]}</Text>
+                            </View>
+                            <View style = {{marginTop : 12}}>
+                                <Text style = {styles.inputTitle}>임금 지급일</Text>
+                                <Text style = {styles.context}>{this.state.data[2]}</Text>
+                            </View>
                         </View>
-                        <View style = {{marginTop : 16}}>
-                            <Text style = {styles.inputTitle}>근무형태</Text>
-                            <Text style = {styles.context}>{this.state.data[16]}</Text>
-                        </View>
-                        <View style = {{marginTop : 16}}>
-                            <Text style = {styles.inputTitle}>근무시간</Text>
-                            <Text style = {styles.context}>{this.state.data[18]} ~ {this.state.data[17]}</Text>
-                        </View>
-                        <View style = {{marginTop : 16}}>
-                            <Text style = {styles.inputTitle}>휴게시간</Text>
-                            <Text style = {styles.context}>{this.state.data[12]} ~ {this.state.data[11]}</Text>
-                        </View>
-                        <View style = {{marginTop : 16}}>
-                            <Text style = {styles.inputTitle}>임금</Text>
-                            <Text style = {styles.context}>{this.state.data[9]} {this.state.data[8]}원</Text>
-                        </View>
-                        <View style = {{marginTop : 16}}>
-                            <Text style = {styles.inputTitle}>임금 지급일</Text>
-                            <Text style = {styles.context}>{this.state.data[2]}</Text>
-                        </View>
-                        <View style = {{marginTop : 16}}>
-                            <Text style = {styles.inputTitle}>임금지급방법</Text>
-                            <Text style = {styles.context}>{this.state.data[4]}</Text>
-                        </View>
-                        <View style = {{marginTop : 16}}>
+
+                        <View style = {{marginTop : 12}}>
                             <Text style = {styles.inputTitle}>사회보험적용여부</Text>
                             <Text style = {styles.context}>{this.state.data[6]}</Text>
                         </View>
-                        <View style = {{marginTop : 16, flexDirection : 'row', alignItems : 'center', justifyContent : 'space-around'}}>
+                        <View style = {{marginTop : 12, flexDirection : 'row', alignItems : 'center', justifyContent : 'space-around'}}>
                         <Text style = {styles.inputTitle}>사업자 전자서명</Text>
                         <Text style = {styles.inputTitle}>나의 전자서명</Text>
                         </View>
@@ -129,11 +176,16 @@ export default class QualificationScreen extends Component {
                             />
                         </View>
                     </View>
-                    </View>
 
-                    <TouchableOpacity style={styles.button} onPress = {this.captureDocument}>
+                    <TouchableOpacity style={styles.button} onPress = {this.takeScreenShot}>
                         <Text style = {{color:"#FFF", fontWeight: "500"}}>작성 완료</Text>
                     </TouchableOpacity>
+                </View>
+
+                <View>
+                    <Image 
+                        source={{uri : this.state.imageURI}} 
+                        style={{width: 200, height: 300, resizeMode: 'contain', marginTop: 5}} />
                 </View>
 
             </ScrollView>
@@ -146,8 +198,7 @@ const styles = StyleSheet.create({
         flex : 2
     },
     greeting: {
-        marginTop : 16,
-        marginBottom : 16,
+        marginTop : 12,
         fontSize : 18,
         fontWeight : "400",
         textAlign : "center"
@@ -165,20 +216,13 @@ const styles = StyleSheet.create({
         textAlign : "center"
     },
     form: {
-        marginBottom : 48,
+        marginBottom : 12,
         marginHorizontal: 30
     },
     inputTitle: {
         color : "#8A8F9E",
         fontSize : 12,
         textTransform : "uppercase"
-    },
-    input: {
-        borderBottomColor : "#8A8F9E",
-        borderBottomWidth : StyleSheet.hairlineWidth,
-        height : 40,
-        fontSize : 15,
-        color : "#161F3D"
     },
     context : {
         marginLeft : 8
@@ -190,6 +234,6 @@ const styles = StyleSheet.create({
         height : 52,
         alignItems : "center",
         justifyContent : "center",
-        marginBottom : 32
+        marginBottom : 16
     }
 });

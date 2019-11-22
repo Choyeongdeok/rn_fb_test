@@ -69,7 +69,7 @@ export default class SignatureScreen extends Component {
                   style = {{width : 100, height : 70, borderColor : '#0C00AF', borderWidth : 1}}
                   source = {{uri : this.state.data.signature}}
                   />
-            </View>
+                </View>
             
                 <View style={styles.sketchContainer}>
                 <ExpoPixi.Signature
@@ -81,22 +81,22 @@ export default class SignatureScreen extends Component {
                     onReady={this.onReady}
                 />
                 <Text style = {styles.underline}>서명은 한 번만 등록 가능합니다.</Text>
-            </View>
-            
-            <View style = {{ justifyContent : "space-around", flexDirection : 'row', alignItems : "center", marginTop : 20}}>
-                <Button
-                    color={'#0C00AF'}
-                    title="reset"
-                    style={styles.button}
-                    onPress={this.clearCanvas}
-                />
-                <Button
-                    color={'#0C00AF'}
-                    title="save"
-                    style={styles.button}
-                    onPress = {this.saveCanvas}
-                />
-            </View>
+                </View>
+                
+                <View style = {{ justifyContent : "space-around", flexDirection : 'row', alignItems : "center", marginTop : 20}}>
+                    <Button
+                        color={'#0C00AF'}
+                        title="reset"
+                        style={styles.button}
+                        onPress={this.clearCanvas}
+                    />
+                    <Button
+                        color={'#0C00AF'}
+                        title="save"
+                        style={styles.button}
+                        onPress = {this.saveCanvas}
+                    />
+                </View>
 
             </View>
         );
