@@ -1,15 +1,19 @@
 import React, { Component, useRef } from 'react'
 import { Text, View, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native'
 import * as firebase from 'firebase'
-import {captureScreen} from 'react-native-view-shot'
+import ViewShot,{captureScreen, captureRef} from 'react-native-view-shot'
+import {RNSaveView} from 'react-native-save-view'
 
-export default class QualificationScreen extends Component {
+export default class SaveDocumentScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             data : [],
-            signature : ''
+            signature : '',
+            year : new Date().getFullYear(),
+            month : new Date().getMonth() + 1,
+            date : new Date().getDate()
         }
     }
 
@@ -18,6 +22,13 @@ export default class QualificationScreen extends Component {
     }
     
     componentDidMount() {
+        const userId = firebase.auth().currentUser.uid
+        firebase.database().ref('/users/' + userId).on(
+            "value", async snapshot => {
+                await this.setState({signature : snapshot.val().signature})
+            }
+        )
+        
         const {navigation} = this.props;
         data = navigation.getParam('data')
         var documentData = []
@@ -26,64 +37,46 @@ export default class QualificationScreen extends Component {
         }
         this.setState({data : documentData})
 
-        const userId = firebase.auth().currentUser.uid
-        firebase.database().ref('/users/' + userId).on(
-            "value", snapshot => {
-                this.setState({signature : snapshot.val().signature})
-            }
-        )
+
+        this.interval = setInterval(() => this.setState({
+            year : new Date().getFullYear(),
+            month : new Date().getMonth() + 1,
+            date : new Date().getDate()
+        }), 1000);
     }
+
+    componentWillMount() {
+        clearInterval(this.interval);
+    }
+
+    onCapture = uri => {
+        this.setState({imageURI : uri})
+        console.log(uri);
+    }
+
+    onImageLoad = () => {
+        this.refs.viewShot.capture().then(uri => {
+          this.setState({imageURI : uri})
+        })
+    };
 
     takeScreenShot = () => {
 
         const userId = firebase.auth().currentUser.uid
-        captureScreen({
-            format: "jpg",
-            quality: 1
+        firebase.database().ref('/users/' + userId + '/savedDocument/').push({
+            name : `${this.state.data[1]} 근로계약서` ,
+            imageuri : this.state.imageURI,
+            timerecord : `${this.state.year}년 ${this.state.month}월 ${this.state.date}일`
         })
-        .then(
-            uri => this.setState({ imageURI : uri }),
-            // uri => console.log(uri),
-            uri => firebase.database().ref('/users/' + userId + '/savedDocument/').push({
-                imageuri : uri
-            }),
-            error => console.error("Oops, Something Went Wrong", error)
-        );
-        // console.log(this.state.imageURI);
-        // const userId = firebase.auth().currentUser.uid
-        // firebase.database().ref('/users/' + userId + '/savedDocument/').push({
-        //     imageuri : this.state.imageURI
-        // })
+        console.log(this.state.imageURI)
     }
-
-    // captureDocument = async () => {
-    //     const doc_result = await takeSnapshotAsync(this.pageView, {
-    //         format: 'jpeg', // 'png' also supported
-    //         quality: 1, // quality 0 for very poor 1 for very good
-    //         result: 'file' // 
-    //     })
-    //     console.log(doc_result)
-        
-    //     const userId = firebase.auth().currentUser.uid
-    //     firebase.database().ref('/users/' + userId + '/savedDocument/').push({
-    //         uri : doc_result
-    //     })
-    // }
-
-    // captureDocument = () => {
-    //     const userId = firebase.auth().currentUser.uid
-    //     firebase.database().ref('/users/' + userId + '/savedDocument/').push({
-    //         imageuri : this.state.imageURI
-    //     })
-    // }
 
     render() {
 
         return (
-
             <ScrollView>
                 <View>
-
+                <ViewShot ref = "viewShot">
                     <Text style = {styles.greeting}>전자근로계약서</Text>
                     
                     <View style = {styles.form}>
@@ -97,18 +90,17 @@ export default class QualificationScreen extends Component {
                                 <Text style = {styles.context}>{this.state.data[5]}</Text>
                             </View>
                             <View style = {{marginTop : 12}}>
-                            <Text style = {styles.inputTitle}>휴대폰 번호</Text>
-                            <Text style = {styles.context}>{this.state.data[10]}</Text>
-                        </View>
+                                <Text style = {styles.inputTitle}>휴대폰 번호</Text>
+                                <Text style = {styles.context}>{this.state.data[10]}</Text>
+                            </View>
                         </View>
 
                         <View style = {{ alignItems : "center", justifyContent : "space-around", flexDirection : 'row'}}>
-                        <View style = {{marginTop : 12}}>
-                            <Text style = {styles.inputTitle}>근로계약기간</Text>
-                            <Text style = {styles.context}>{this.state.data[3]} ~ {this.state.data[7]}</Text>
+                            <View style = {{marginTop : 12}}>
+                                <Text style = {styles.inputTitle}>근로계약기간</Text>
+                                <Text style = {styles.context}>{this.state.data[3]} ~ {this.state.data[7]}</Text>
+                            </View>
                         </View>
-
-                    </View>
 
                         <View style = {{ alignItems : "center", justifyContent : "space-around", flexDirection : 'row'}}>
                             <View style = {{marginTop : 12}}>
@@ -162,8 +154,8 @@ export default class QualificationScreen extends Component {
                             <Text style = {styles.context}>{this.state.data[6]}</Text>
                         </View>
                         <View style = {{marginTop : 12, flexDirection : 'row', alignItems : 'center', justifyContent : 'space-around'}}>
-                        <Text style = {styles.inputTitle}>사업자 전자서명</Text>
-                        <Text style = {styles.inputTitle}>나의 전자서명</Text>
+                            <Text style = {styles.inputTitle}>사업자 전자서명</Text>
+                            <Text style = {styles.inputTitle}>나의 전자서명</Text>
                         </View>
                         <View style = {{ marginTop : 8,  flexDirection : 'row', alignItems : 'center', justifyContent : 'space-around'}}>
                             <Image
@@ -173,21 +165,22 @@ export default class QualificationScreen extends Component {
                             <Image
                                 style = {{width : 100, height : 70,     borderColor : '#0C00AF', borderWidth : 1}}
                                 source = {{uri : this.state.signature}}
+                                onLoad = {this.onImageLoad}
                             />
                         </View>
+                    </View>
+                </ViewShot>
                     </View>
 
                     <TouchableOpacity style={styles.button} onPress = {this.takeScreenShot}>
                         <Text style = {{color:"#FFF", fontWeight: "500"}}>작성 완료</Text>
                     </TouchableOpacity>
-                </View>
 
-                <View>
+                {/* <View>
                     <Image 
                         source={{uri : this.state.imageURI}} 
                         style={{width: 200, height: 300, resizeMode: 'contain', marginTop: 5}} />
-                </View>
-
+                </View> */}
             </ScrollView>
         )
     }

@@ -16,6 +16,21 @@ function Item({index1}) {
     );
 }
 
+function Item2({index1, index2}) {
+    return (
+        <View style={styles.item}>
+            <View style = {{flexDirection : 'row', justifyContent : 'space-between'}}>
+                <View>
+                    <Text style = {styles.title}>{index1}</Text>
+                </View>
+                <View>
+                    <Text style = {styles.title}>{index2}</Text>
+                </View>
+            </View>
+        </View>
+    );
+}
+
 export default class WorkingRecordScreen extends Component {
 
     constructor(props) {
@@ -34,27 +49,26 @@ export default class WorkingRecordScreen extends Component {
                 var mydocumentList = []
                 for(var key in snapVal) {
                     mydocumentList.push(snapVal[key])
-                    // console.log(snapVal[key])
-                    // for (var obj in snapVal[key]) {
-                    //     mydocumentList.push(snapVal[key][obj])
-                    //     console.log(snapVal[key][obj])
-                    // }
                 }
-                // if(mydocumentList[0] == null) {
-                //     mydocumentList.push({})
-                // }
                 await this.setState({data : mydocumentList})
+                
             }
         )
 
+
+        // firebase.database().ref('/users/' + userId).on(
+        //     "value", async snapshot => {
+        //         await this.setState({uri : snapshot.val().signature})
+        //     }
+        // )
         firebase.database().ref('/users/' + userId + '/savedDocument/').on(
             "value", async snapshot => {
                 var snapVal = snapshot.val()
                 var myuriList = []
                 for(var key in snapVal) {
-                    myuriList.push(snapVal[key].imageuri)
-                    console.log(snapVal[key].imageuri)
+                    myuriList.push(snapVal[key])
                 }
+                console.log(myuriList)
                 await this.setState({uri : myuriList})
                 
             }
@@ -82,12 +96,21 @@ export default class WorkingRecordScreen extends Component {
                         </View>
                     
                     <View style = {{marginLeft : 8}}><Text>저장된 근로계약서</Text></View>
-                    <View>
-                        <Image
-                        style = {{width : 200, height : 300, resizeMode : 'contain'}}
-                        source = {{uri : this.state.uri}}
-                        />
-                    </View>
+                        <View>
+                            <FlatList
+                            data = {this.state.uri}
+                            renderItem = {({item}) =>
+                                <Item2
+                                index1 = {item.name}
+                                index2 = {item.timerecord}
+                                />
+                        }
+                            />
+                            {/* <Image
+                            style = {{width : 120, height : 200, borderColor : '#0C00AF', borderWidth : 1}}
+                            source = {{uri : this.state.uri[0]}}
+                            /> */}
+                        </View>
                     </View>
             </ScrollView>
         )
