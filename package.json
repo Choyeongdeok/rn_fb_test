@@ -13,6 +13,7 @@
     "expo-barcode-scanner": "^7.0.0",
     "expo-constants": "~7.0.0",
     "expo-gl": "^7.0.0",
+    "expo-image-picker": "~7.0.0",
     "expo-pixi": "^1.2.0",
     "firebase": "^7.1.0",
     "moment": "^2.24.0",

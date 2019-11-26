@@ -67,7 +67,8 @@ export default class RequestScreen extends Component {
                 firebase.database().ref('/work/' + this.state.key +'/requestMember/').push({
                     name : snapshot.val().name,
                     userId : firebase.auth().currentUser.uid,
-                    phonenumber : snapshot.val().phonenumber
+                    phonenumber : snapshot.val().phonenumber,
+                    gendertype : snapshot.val().gendertype
                 })
                 Alert.alert(
                     '알림',

@@ -29,7 +29,8 @@ import CertificationScreen from './screens/CertificationScreen';
 import QualificationScreen from './screens/QualificationScreen';
 import AccountNumberScreen from './screens/AccountNumberScreen';
 import SignatureScreen from './screens/SignatureScreen';
-import SaveDocumentScreen from './screens/SaveDocumentScreen'
+import SaveDocumentScreen from './screens/SaveDocumentScreen';
+import DocumentImageScreen from './screens/DocumentImageScreen'
 
 //더보기
 import MoreScreen from './screens/MoreScreen';
@@ -65,8 +66,8 @@ const HomeStack = createStackNavigator({
                 firebase.auth().signOut()
                 }
             }>
-                            <Text  style = {{marginRight : 20}}>로그아웃</Text>
-                            </TouchableOpacity>
+                <Text  style = {{marginRight : 20}}>로그아웃</Text>
+            </TouchableOpacity>
         }
     },
     Request : {
@@ -147,7 +148,14 @@ const MyPageStack = createStackNavigator({
     SaveDocument : {
         screen : SaveDocumentScreen,
         navigationOptions : {
-            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>전자근로계약서 저장</Text></View>,
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>작성중인 계약서</Text></View>,
+            headerRight : <Text style = {{marginRight : 20}}></Text>
+        }
+    },
+    DocumentImage : {
+        screen : DocumentImageScreen,
+        navigationOptions : {
+            headerTitle : <View style={{alignItems: "center", flex : 1}}><Text style = {{fontSize : 24}}>근로계약서 이미지</Text></View>,
             headerRight : <Text style = {{marginRight : 20}}></Text>
         }
     }

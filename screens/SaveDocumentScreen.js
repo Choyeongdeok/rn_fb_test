@@ -1,5 +1,5 @@
 import React, { Component, useRef } from 'react'
-import { Text, View, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { Text, View, ScrollView, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native'
 import * as firebase from 'firebase'
 import ViewShot,{captureScreen, captureRef} from 'react-native-view-shot'
 import {RNSaveView} from 'react-native-save-view'
@@ -51,7 +51,7 @@ export default class SaveDocumentScreen extends Component {
 
     onCapture = uri => {
         this.setState({imageURI : uri})
-        console.log(uri);
+        // console.log(uri);
     }
 
     onImageLoad = () => {
@@ -68,7 +68,12 @@ export default class SaveDocumentScreen extends Component {
             imageuri : this.state.imageURI,
             timerecord : `${this.state.year}년 ${this.state.month}월 ${this.state.date}일`
         })
-        console.log(this.state.imageURI)
+        Alert.alert(
+            '작성 완료',
+            `근로계약서가 저장되었습니다.`,
+            [{text : "ok", onPress : () => this.props.navigation.navigate("WorkingRecord")}]
+        )
+        // console.log(this.state.imageURI)
     }
 
     render() {

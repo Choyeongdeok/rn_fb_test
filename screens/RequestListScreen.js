@@ -58,6 +58,7 @@ export default class RequestListScreen extends Component {
                 memberId.push(uId[index])
             }
         }
+
         firebase.database().ref('/work/' + this.state.key).on(
             "value", async (snapshot) => {
                 var member = snapshot.val().member;
@@ -78,7 +79,7 @@ export default class RequestListScreen extends Component {
                     Alert.alert(
                         '선택 완료',
                         `${member}명에게 전자근로계약서 양식을 전달하였습니다.`,
-                        [{text : "ok"}]
+                        [{text : "ok", onPress : () => this.props.navigation.navigate("More")}]
                     )
                 }
             }
@@ -102,7 +103,7 @@ export default class RequestListScreen extends Component {
                             />
                             <Body>
                                 <View style = {{marginLeft : 8}}>
-                                <Text>{item.name}</Text>
+                                <Text>{item.name}({item.gendertype}, {item.phonenumber})</Text>
                                 </View>
                             </Body>
                         </ListItem>

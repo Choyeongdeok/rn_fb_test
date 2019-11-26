@@ -51,6 +51,12 @@ export default class SignatureScreen extends Component {
             firebase.database().ref('/users/' + userId).update({
                 signature : signature_result.uri
             })
+            Alert.alert(
+                '저장 완료',
+                '디지털 서명이 등록되었습니다.',
+                [{text : 'OK', onPress : () => this.props.navigation.navigate("MyPage")}],
+                {cancelable : false}
+            )
         }
     }
 

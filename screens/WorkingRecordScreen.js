@@ -6,7 +6,7 @@ import * as firebase from 'firebase'
 
 function Item({index1}) {
     return (
-        <View style={styles.item}>
+        <View>
             <View style = {{flexDirection : 'row', justifyContent : 'space-between'}}>
                 <View>
                     <Text style = {styles.title}>{index1} 근로계약서</Text>
@@ -24,7 +24,7 @@ function Item2({index1, index2}) {
                     <Text style = {styles.title}>{index1}</Text>
                 </View>
                 <View>
-                    <Text style = {styles.title}>{index2}</Text>
+                    <Text style = {{marginRight : 16}}>{index2}</Text>
                 </View>
             </View>
         </View>
@@ -55,12 +55,6 @@ export default class WorkingRecordScreen extends Component {
             }
         )
 
-
-        // firebase.database().ref('/users/' + userId).on(
-        //     "value", async snapshot => {
-        //         await this.setState({uri : snapshot.val().signature})
-        //     }
-        // )
         firebase.database().ref('/users/' + userId + '/savedDocument/').on(
             "value", async snapshot => {
                 var snapVal = snapshot.val()
@@ -68,7 +62,6 @@ export default class WorkingRecordScreen extends Component {
                 for(var key in snapVal) {
                     myuriList.push(snapVal[key])
                 }
-                console.log(myuriList)
                 await this.setState({uri : myuriList})
                 
             }
@@ -79,8 +72,10 @@ export default class WorkingRecordScreen extends Component {
         return (
             <ScrollView >
                 <View>
-                    <View style = {{marginLeft : 8}}><Text>작성중인 근로계약서</Text></View>
-                        <View style = {{marginTop : 8}}>
+                    <View style = {{marginTop : 16, marginLeft : 8}}>
+                        <Text style = {{fontSize : 24}}>작성중인 근로계약서</Text>
+                    </View>
+                        <View style = {{marginTop : 32, marginBottom : 32}}>
                             <FlatList
                             data = {this.state.data}
                             renderItem = {({item}) => 
@@ -95,22 +90,25 @@ export default class WorkingRecordScreen extends Component {
                             />
                         </View>
                     
-                    <View style = {{marginLeft : 8}}><Text>저장된 근로계약서</Text></View>
-                        <View>
-                            <FlatList
-                            data = {this.state.uri}
-                            renderItem = {({item}) =>
-                                <Item2
-                                index1 = {item.name}
-                                index2 = {item.timerecord}
-                                />
-                        }
-                            />
-                            {/* <Image
-                            style = {{width : 120, height : 200, borderColor : '#0C00AF', borderWidth : 1}}
-                            source = {{uri : this.state.uri[0]}}
-                            /> */}
+                        <View style = {{marginLeft : 8}}>
+                            <Text style = {{fontSize : 24}}>저장된 근로계약서</Text>
                         </View>
+                            <View style = {{marginTop : 32, marginBottom : 32}}>
+                                <FlatList
+                                    data = {this.state.uri}
+                                    renderItem = {({item}) =>
+                                        <TouchableOpacity
+                                        onPress = {() => {
+                                            this.props.navigation.navigate("DocumentImage", {data : item.imageuri})
+                                        }}>
+                                            <Item2
+                                            index1 = {item.name}
+                                            index2 = {item.timerecord}
+                                            />
+                                        </TouchableOpacity>
+                                    }
+                                />
+                            </View>
                     </View>
             </ScrollView>
         )
@@ -124,10 +122,10 @@ const styles = StyleSheet.create({
         marginBottom :32
     },
     item: {
-
+        marginTop : 8
     },
     title: {
-        fontSize : 20,
+        fontSize : 16,
         textAlign : 'left',
         color : '#0C00AF',
         marginLeft : 16

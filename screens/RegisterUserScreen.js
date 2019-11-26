@@ -2,16 +2,19 @@ import React, {Component} from 'react';
 import {ScrollView, View, Text, StyleSheet} from 'react-native';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import * as firebase from 'firebase';
-
+import {Card, CardItem, CheckBox} from 'native-base'
 
 export default class RegisterUserScreen extends Component {
 
     state = {
         name : "",
+        gendertype : "",
         email : "",
         password : "",
         phonenumber : "",
-        errorMessage : null
+        errorMessage : null,
+        one : false,
+        two : false
     };
 
     handleSignUp = () => {
@@ -30,6 +33,7 @@ export default class RegisterUserScreen extends Component {
             .then((res) => {
                 firebase.database().ref('users/' + res.user.uid).set({
                     name : this.state.name,
+                    gendertype : this.state.gendertype,
                     email : this.state.email,
                     phonenumber : this.state.phonenumber,
                     permission : false
@@ -42,8 +46,14 @@ export default class RegisterUserScreen extends Component {
             })
             
             .catch(error => this.setState({errorMessage: error.message}));
-        
+    }
 
+    onePressed(gender) {
+        this.setState({one: true, two : false, gendertype : gender})
+    }
+
+    twoPressed(gender) {
+        this.setState({one: false, two : true, gendertype : gender})
     }
 
 
@@ -65,6 +75,24 @@ export default class RegisterUserScreen extends Component {
                         <TextInput
                             style = {styles.input} placeholder = "이름을 입력하세요." autoCapitalize = "none" onChangeText={name => this.setState({name})} value={this.state.name}
                         ></TextInput>
+                    </View>
+                    <View style = {{marginTop : 32}}>
+                    <Text style = {styles.inputTitle}>Gender</Text>
+                    <Card>
+                                <CardItem body>
+                                    <CheckBox checked = {this.state.one}
+                                    onPress = {() => this.onePressed('남성')}
+                                    style = {{marginRight : 20, borderColor : "#0C00AF"}}
+                                    /><Text style={{color : "#8A8F9E"}}>남성</Text>
+                                </CardItem>
+
+                                <CardItem body>
+                                    <CheckBox checked = {this.state.two}
+                                    onPress = {() => this.twoPressed('여성')}
+                                    style = {{marginRight : 20, borderColor : "#0C00AF"}}
+                                    /><Text style={{color : "#8A8F9E"}}>여성</Text>
+                                </CardItem>
+                            </Card>
                     </View>
                     <View style = {{marginTop : 32}}>
                         <Text style = {styles.inputTitle}>Email Address</Text>
