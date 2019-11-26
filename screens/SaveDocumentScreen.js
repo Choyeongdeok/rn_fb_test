@@ -60,14 +60,25 @@ export default class SaveDocumentScreen extends Component {
         })
     };
 
-    takeScreenShot = () => {
-
+    takeScreenShot = async () => {
+        console.log(this.state.imageURI)
         const userId = firebase.auth().currentUser.uid
-        firebase.database().ref('/users/' + userId + '/savedDocument/').push({
-            name : `${this.state.data[1]} 근로계약서` ,
+        await firebase.database().ref('/users/' + userId + '/savedDocument/').push({
+            name : `${this.state.data[1]} 근로계약서`,
             imageuri : this.state.imageURI,
             timerecord : `${this.state.year}년 ${this.state.month}월 ${this.state.date}일`
         })
+        console.log(1)
+        fetch("http://192.168.0.149:3000/test1", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: userId+"|"+this.state.imageURI
+            
+        });
+        console.log(2)
         Alert.alert(
             '작성 완료',
             `근로계약서가 저장되었습니다.`,
