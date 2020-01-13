@@ -105,8 +105,8 @@ Screenshot
   </div>
   <br/><br/><br/><br/><br/>
   
-  <div>
+<div>
 13. 구직회원은 출근하여 qr코드를 촬영하면 출, 퇴근 시간이 Firebase 데이터베이스에 저장되어 출퇴근 기록 조회 가능
 <img width="200" height ="300" src = "https://user-images.githubusercontent.com/54658590/72256793-65694180-364d-11ea-821d-9d542fc7dd19.jpg">
 <img width="200" height ="300" src = "https://user-images.githubusercontent.com/54658590/72256794-65694180-364d-11ea-9bd0-80cd3fa107d2.jpg">
-  </div>
+</div>
